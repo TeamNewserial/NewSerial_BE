@@ -2,8 +2,8 @@ package com.example.newserial.domain.memo.entity;
 
 
 import com.example.newserial.domain.BaseTimeEntity;
-import com.example.newserial.domain.member.Member;
-import com.example.newserial.domain.news.News;
+import com.example.newserial.domain.member.repository.Member;
+import com.example.newserial.domain.news.repository.News;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
