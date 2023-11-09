@@ -1,43 +1,35 @@
-package com.example.newserial.domain.memo;
+package com.example.newserial.domain.bookmark;
 
-
+import com.example.newserial.domain.BaseTimeEntity;
 import com.example.newserial.domain.member.Member;
 import com.example.newserial.domain.news.News;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.sql.Timestamp;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
-@Setter
-public class Memo {
+@NoArgsConstructor
+@Entity
+@IdClass(BookmarkId.class)
+public class Bookmark extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(columnDefinition = "TEXT")
-    private String body;
-
-    @Column(columnDefinition = "TIMESTAMP")
-    private Timestamp date;
-
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name="member_id")
     private Member member;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @Id
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="news_id")
     private News news;
 }

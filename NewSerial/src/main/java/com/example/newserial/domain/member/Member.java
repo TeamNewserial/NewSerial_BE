@@ -1,25 +1,37 @@
 package com.example.newserial.domain.member;
 
-import jakarta.persistence.Column;
+import com.example.newserial.domain.bookmark.Bookmark;
+import com.example.newserial.domain.memo.entity.Memo;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @NotNull
     private String email;
 
-    @Column
+    @NotNull
     private String password;
+
+    @OneToMany(mappedBy = "member")
+    private List<Memo> memos;
+
+    @OneToMany(mappedBy = "member")
+    private List<Bookmark> bookmarks;
 
 }
