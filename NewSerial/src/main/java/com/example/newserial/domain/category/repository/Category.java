@@ -1,9 +1,8 @@
-package com.example.newserial.domain.category;
+package com.example.newserial.domain.category.repository;
 
-import com.example.newserial.domain.news.News;
+import com.example.newserial.domain.news.repository.News;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,7 +10,6 @@ import jakarta.persistence.OneToMany;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @NoArgsConstructor

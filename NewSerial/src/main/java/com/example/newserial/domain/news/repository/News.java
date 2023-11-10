@@ -1,7 +1,7 @@
-package com.example.newserial.domain.news;
+package com.example.newserial.domain.news.repository;
 
-import com.example.newserial.domain.bookmark.Bookmark;
-import com.example.newserial.domain.category.Category;
+import com.example.newserial.domain.bookmark.repository.Bookmark;
+import com.example.newserial.domain.category.repository.Category;
 import com.example.newserial.domain.memo.entity.Memo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
