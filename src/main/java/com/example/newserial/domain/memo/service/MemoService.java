@@ -1,5 +1,6 @@
 package com.example.newserial.domain.memo.service;
 
+import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.error.ErrorCode;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.repository.MemberRepository;
