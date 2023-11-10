@@ -1,6 +1,6 @@
-package com.example.newserial.domain.member;
+package com.example.newserial.domain.member.repository;
 
-import com.example.newserial.domain.bookmark.Bookmark;
+import com.example.newserial.domain.bookmark.repository.Bookmark;
 import com.example.newserial.domain.memo.entity.Memo;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
