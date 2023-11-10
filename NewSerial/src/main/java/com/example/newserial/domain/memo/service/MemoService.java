@@ -1,4 +1,4 @@
-package com.example.newserial.domain.memo;
+package com.example.newserial.domain.memo.service;
 
 import com.example.newserial.domain.error.ErrorCode;
 import com.example.newserial.domain.error.BadRequestException;
@@ -9,6 +9,7 @@ import com.example.newserial.domain.memo.dto.MemoSaveRequestDto;
 import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;
+import com.example.newserial.domain.memo.repository.MemoRepository;
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
