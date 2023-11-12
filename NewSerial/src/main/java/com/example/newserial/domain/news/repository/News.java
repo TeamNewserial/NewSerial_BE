@@ -42,7 +42,7 @@ public class News {
 
     @NotNull
     @Column(columnDefinition = "TIMESTAMP")
-    private Timestamp date;
+    private Timestamp date; //YYYY-MM-DD hh:mm:ss.000000’ 형식, 2038–01–19 03:14:07.999999’
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
@@ -51,6 +51,6 @@ public class News {
     @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
     private List<Memo> memos; //이게 맞나
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Bookmark bookmark;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    private Bookmark bookmark;
 }
