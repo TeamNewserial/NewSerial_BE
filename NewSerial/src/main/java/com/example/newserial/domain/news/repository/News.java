@@ -1,12 +1,7 @@
 package com.example.newserial.domain.news.repository;
 
-<<<<<<< HEAD:NewSerial/src/main/java/com/example/newserial/domain/news/News.java
-import com.example.newserial.domain.bookmark.Bookmark;
-import com.example.newserial.domain.category.Category;
-=======
 import com.example.newserial.domain.bookmark.repository.Bookmark;
 import com.example.newserial.domain.category.repository.Category;
->>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25:NewSerial/src/main/java/com/example/newserial/domain/news/repository/News.java
 import com.example.newserial.domain.memo.repository.Memo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
