@@ -1,4 +1,4 @@
-package com.example.newserial.domain.memo;
+package com.example.newserial.domain.memo.repository;
 
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;

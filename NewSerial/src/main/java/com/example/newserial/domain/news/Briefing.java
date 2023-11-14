@@ -1,4 +1,4 @@
-package com.example.newserial.domain.briefing;
+package com.example.newserial.domain.news;
 
 import com.example.newserial.domain.BaseTimeEntity;
 import com.example.newserial.domain.category.Category;

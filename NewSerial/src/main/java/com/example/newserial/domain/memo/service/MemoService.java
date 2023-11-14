@@ -1,4 +1,4 @@
-package com.example.newserial.domain.memo;
+package com.example.newserial.domain.memo.service;
 
 import com.example.newserial.domain.error.ErrorCode;
 import com.example.newserial.domain.error.BadRequestException;
@@ -9,6 +9,7 @@ import com.example.newserial.domain.memo.dto.MemoSaveRequestDto;
 import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;
+import com.example.newserial.domain.memo.repository.MemoRepository;
 import com.example.newserial.domain.news.News;
 import com.example.newserial.domain.news.NewsRepository;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,7 @@ public class MemoService {
     }
 
     public News getNews(Long newsId) {
-        return newsRepository.findById(newsId).orElseThrow(() -> new BadRequestException("해당 멤버가 없습니다.", ErrorCode.BAD_REQUEST));
+        return newsRepository.findById(newsId).orElseThrow(() -> new BadRequestException("해당 뉴스가 없습니다.", ErrorCode.BAD_REQUEST));
     }
 
     public Memo getMemo(MemoId memoId) {

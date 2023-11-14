@@ -1,5 +1,6 @@
-package com.example.newserial.domain.memo;
+package com.example.newserial.domain.memo.controller;
 
+import com.example.newserial.domain.memo.service.MemoService;
 import com.example.newserial.domain.memo.dto.MemoResponseDto;
 import com.example.newserial.domain.memo.dto.MemoSaveRequestDto;
 import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
