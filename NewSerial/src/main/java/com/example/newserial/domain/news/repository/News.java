@@ -1,7 +1,12 @@
-package com.example.newserial.domain.news;
+package com.example.newserial.domain.news.repository;
 
+<<<<<<< HEAD:NewSerial/src/main/java/com/example/newserial/domain/news/News.java
 import com.example.newserial.domain.bookmark.Bookmark;
 import com.example.newserial.domain.category.Category;
+=======
+import com.example.newserial.domain.bookmark.repository.Bookmark;
+import com.example.newserial.domain.category.repository.Category;
+>>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25:NewSerial/src/main/java/com/example/newserial/domain/news/repository/News.java
 import com.example.newserial.domain.memo.repository.Memo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +47,7 @@ public class News {
 
     @NotNull
     @Column(columnDefinition = "TIMESTAMP")
-    private Timestamp date;
+    private Timestamp date; //YYYY-MM-DD hh:mm:ss.000000’ 형식, 2038–01–19 03:14:07.999999’
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
@@ -51,6 +56,6 @@ public class News {
     @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
     private List<Memo> memos; //이게 맞나
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Bookmark bookmark;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    private Bookmark bookmark;
 }

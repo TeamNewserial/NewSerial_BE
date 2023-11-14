@@ -4,6 +4,7 @@ import com.example.newserial.domain.memo.service.MemoService;
 import com.example.newserial.domain.memo.dto.MemoResponseDto;
 import com.example.newserial.domain.memo.dto.MemoSaveRequestDto;
 import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
+import com.example.newserial.domain.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,7 +1,7 @@
 package com.example.newserial.domain.memo.repository;
 
-import com.example.newserial.domain.member.Member;
-import com.example.newserial.domain.news.News;
+import com.example.newserial.domain.member.repository.Member;
+import com.example.newserial.domain.news.repository.News;
 import java.io.Serializable;
 import java.util.Objects;
 

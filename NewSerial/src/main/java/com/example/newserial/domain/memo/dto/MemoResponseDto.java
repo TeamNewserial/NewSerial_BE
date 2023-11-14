@@ -1,7 +1,12 @@
 package com.example.newserial.domain.memo.dto;
 
+<<<<<<< HEAD
 import com.example.newserial.domain.memo.repository.Memo;
+=======
+>>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25
 import java.time.LocalDateTime;
+
+import com.example.newserial.domain.memo.repository.Memo;
 import lombok.Getter;
 
 @Getter

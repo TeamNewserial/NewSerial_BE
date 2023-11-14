@@ -2,16 +2,21 @@ package com.example.newserial.domain.memo.service;
 
 import com.example.newserial.domain.error.ErrorCode;
 import com.example.newserial.domain.error.BadRequestException;
-import com.example.newserial.domain.member.Member;
-import com.example.newserial.domain.member.MemberRepository;
+import com.example.newserial.domain.member.repository.Member;
+import com.example.newserial.domain.member.repository.MemberRepository;
 import com.example.newserial.domain.memo.dto.MemoResponseDto;
 import com.example.newserial.domain.memo.dto.MemoSaveRequestDto;
 import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;
 import com.example.newserial.domain.memo.repository.MemoRepository;
+<<<<<<< HEAD
 import com.example.newserial.domain.news.News;
 import com.example.newserial.domain.news.NewsRepository;
+=======
+import com.example.newserial.domain.news.repository.News;
+import com.example.newserial.domain.news.repository.NewsRepository;
+>>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
