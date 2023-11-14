@@ -1,4 +1,8 @@
+<<<<<<< HEAD:NewSerial/src/main/java/com/example/newserial/domain/news/Briefing.java
+package com.example.newserial.domain.news;
+=======
 package com.example.newserial.domain.news.repository;
+>>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25:NewSerial/src/main/java/com/example/newserial/domain/news/repository/Briefing.java
 
 import com.example.newserial.domain.BaseTimeEntity;
 import com.example.newserial.domain.category.repository.Category;

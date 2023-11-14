@@ -10,8 +10,13 @@ import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;
 import com.example.newserial.domain.memo.repository.MemoRepository;
+<<<<<<< HEAD
+import com.example.newserial.domain.news.News;
+import com.example.newserial.domain.news.NewsRepository;
+=======
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
+>>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +71,7 @@ public class MemoService {
     }
 
     public News getNews(Long newsId) {
-        return newsRepository.findById(newsId).orElseThrow(() -> new BadRequestException("해당 멤버가 없습니다.", ErrorCode.BAD_REQUEST));
+        return newsRepository.findById(newsId).orElseThrow(() -> new BadRequestException("해당 뉴스가 없습니다.", ErrorCode.BAD_REQUEST));
     }
 
     public Memo getMemo(MemoId memoId) {
