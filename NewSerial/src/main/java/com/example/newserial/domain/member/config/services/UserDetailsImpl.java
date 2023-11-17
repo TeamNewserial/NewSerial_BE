@@ -3,6 +3,7 @@ package com.example.newserial.domain.member.config.services;
 import com.example.newserial.domain.member.repository.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -46,7 +47,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
     }
 
     @Override
