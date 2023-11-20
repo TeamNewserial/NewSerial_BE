@@ -108,14 +108,17 @@ public class JwtUtils {
                 .compact();
     }
 
-    //refreshToken 발급
+    //refreshToken 발급, 발급 후 redis에 저장
     public String generateRefreshTokenFromEmail(String email) {
-        return Jwts.builder()
+        String refreshToken = Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + RTExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
+
+        redisService.set(email, refreshToken, RTExpirationMs); //레디스 저장
+        return refreshToken;
     }
 
 }

@@ -4,20 +4,23 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional(readOnly = true)
+@Component
 @RequiredArgsConstructor
 public class RedisService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisTemplate<String, Object> redisBlackListTemplate;
+    private final RedisTemplate<String, Object> redisTemplate; //refreshToken 저장
+    private final RedisTemplate<String, Object> redisBlackListTemplate; //로그아웃한 accessToken 저장
 
-    public void set(String key, Object o, int minutes) {
+
+    //refreshToken 작업
+    //키: 이메일, 값: refreshToken, minute: refreshToken의 expiration time
+    public void set(String key, Object o, int milliseconds) {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer(o.getClass()));
-        redisTemplate.opsForValue().set(key, o, minutes, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(key, o, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     public Object get(String key) {
@@ -32,9 +35,11 @@ public class RedisService {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
-    public void setBlackList(String key, Object o, int minutes) {
+
+    //accessToken 작업
+    public void setBlackList(String key, Object o, int milliseconds) {
         redisBlackListTemplate.setValueSerializer(new Jackson2JsonRedisSerializer(o.getClass()));
-        redisBlackListTemplate.opsForValue().set(key, o, minutes, TimeUnit.MINUTES);
+        redisBlackListTemplate.opsForValue().set(key, o, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     public Object getBlackList(String key) {
