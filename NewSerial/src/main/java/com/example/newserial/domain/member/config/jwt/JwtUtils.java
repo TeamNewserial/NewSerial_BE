@@ -32,6 +32,7 @@ public class JwtUtils {
     @Value("${jwtCookieName}")
     private String jwtCookie;
 
+    //쿠키에서 토큰 꺼내기
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
         if (cookie != null) {
@@ -41,26 +42,31 @@ public class JwtUtils {
         }
     }
 
+    //토큰 저장한 쿠키 생성
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromEmail(userPrincipal.getEmail());
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/").maxAge(24*60*60).httpOnly(true).build();
         return cookie;
     }
 
+    //쿠키 삭제
     public ResponseCookie getCleanJwtCookie() {
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/").build();
         return cookie;
     }
 
+    //토큰에서 이메일 꺼내기
     public String getEmailFromJwtToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
+    //키 생성
     private Key key() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
+    //토큰 검증
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
@@ -79,7 +85,7 @@ public class JwtUtils {
     }
 
 
-
+    //이메일을 이용해 토큰 생성
     public String generateTokenFromEmail(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -88,4 +94,10 @@ public class JwtUtils {
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    //TODO accessToken, refreshToken 생성
+
+    //TODO accessToken, refreshToken 검증
+
+    //
 }
