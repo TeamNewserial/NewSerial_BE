@@ -2,6 +2,7 @@ package com.example.newserial.domain.member.controller;
 
 
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
+import com.example.newserial.domain.member.config.redis.RedisService;
 import com.example.newserial.domain.member.config.services.UserDetailsImpl;
 import com.example.newserial.domain.member.payload.request.LoginRequest;
 import com.example.newserial.domain.member.payload.request.SignupRequest;
@@ -9,8 +10,9 @@ import com.example.newserial.domain.member.payload.response.MessageResponse;
 import com.example.newserial.domain.member.payload.response.UserInfoResponse;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +22,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "http://10.0.2.15:8081")
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder encoder;
+    private final JwtUtils jwtUtils;
+    private final RedisService redisService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -74,10 +70,17 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
-        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+    //bearer????이 뭐지 -> Authorization: Bearer <Token> -> 이 형태에 대해 알아보기 아 졸려디짐
+    @PostMapping("/newserial-logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+        //클라이언트는 request의 authorization header에 accessToken 넣어서 요청
+        String accessToken = request.getHeader("Authorization");
+        String email = jwtUtils.getEmailFromJwtToken(accessToken);
+        //레디스에서 refreshToken 삭제
+        redisService.delete(email);
+        //accessToken 등록
+        redisService.setBlackList(accessToken, "accessToken", jwtUtils.getRemainTimeMillis(accessToken));
+        return ResponseEntity.ok()
                 .body(new MessageResponse("You've been signed out!"));
     }
 }

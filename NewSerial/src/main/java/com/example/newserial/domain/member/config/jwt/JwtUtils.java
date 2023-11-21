@@ -4,6 +4,7 @@ import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.error.ErrorCode;
 import com.example.newserial.domain.member.config.redis.RedisService;
 import com.example.newserial.domain.member.config.services.UserDetailsImpl;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -51,6 +52,14 @@ public class JwtUtils {
         }
     }
 
+    //토큰에서 "Bearer " 지우기
+    public String removeBearer(String token) {
+        if (token.contains("Bearer ")) {
+            return token.replace("Bearer ", "");
+        }
+        return token;
+    }
+
     //토큰 저장한 쿠키 생성(+RT - Secure, HttpOnly)
     public ResponseCookie generateRefreshTokenCookie(UserDetailsImpl userPrincipal) {
         String RefreshToken = generateRefreshTokenFromEmail(userPrincipal.getEmail());
@@ -67,6 +76,7 @@ public class JwtUtils {
 
     //토큰에서 이메일 꺼내기
     public String getEmailFromJwtToken(String token) {
+        token = removeBearer(token);
         return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
@@ -78,6 +88,7 @@ public class JwtUtils {
 
     //토큰 검증
     public boolean validateJwtToken(String authToken) {
+        authToken = removeBearer(authToken);
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
             if (redisService.hasKeyBlackList(authToken)) {
@@ -119,6 +130,15 @@ public class JwtUtils {
 
         redisService.set(email, refreshToken, RTExpirationMs); //레디스 저장
         return refreshToken;
+    }
+
+    public int getRemainTimeMillis(String token) {
+        token = removeBearer(token);
+        Claims claims = Jwts.parser().setSigningKey(key()).parseClaimsJws(token).getBody();
+        Date expirationDate = claims.getExpiration();
+        long remainTimeMillis = expirationDate.getTime() - System.currentTimeMillis();
+        int ttlMillis = (int) Math.max(remainTimeMillis, 0); //음수 방지
+        return ttlMillis;
     }
 
 }
