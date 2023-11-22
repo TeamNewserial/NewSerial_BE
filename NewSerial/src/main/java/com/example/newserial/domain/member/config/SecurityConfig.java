@@ -4,10 +4,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.example.newserial.domain.member.config.jwt.AuthEntryPointJwt;
 import com.example.newserial.domain.member.config.jwt.AuthTokenFilter;
+import com.example.newserial.domain.member.config.services.SaveAndDeleteTokenFromRedis;
 import com.example.newserial.domain.member.config.services.UserDetailsServiceImpl;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -31,10 +35,15 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
+    private final SaveAndDeleteTokenFromRedis saveAndDeleteTokenFromRedis;
+    private final AuthTokenFilter authTokenFilter;
+
+    @Value("${jwtCookieNameRT}")
+    private String RTcookie;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+        return authTokenFilter;
     }
 
     @Bean
@@ -46,6 +55,7 @@ public class SecurityConfig {
 
         return authProvider;
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -81,6 +91,11 @@ public class SecurityConfig {
         http.authenticationProvider(authenticationProvider());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.logout((logout) ->
+                logout.addLogoutHandler(saveAndDeleteTokenFromRedis)
+                        .addLogoutHandler(new CookieClearingLogoutHandler(RTcookie))
+                        .logoutSuccessUrl("/"));
 
         return http.build();
     }

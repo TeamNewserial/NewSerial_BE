@@ -1,4 +1,4 @@
-package com.example.newserial.domain.member.payload.request;
+package com.example.newserial.domain.member.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginRequest {
+public class LoginRequestDto {
     @NotBlank
     private String email;
 

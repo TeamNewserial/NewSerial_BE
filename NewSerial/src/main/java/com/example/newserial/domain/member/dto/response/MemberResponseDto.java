@@ -1,13 +1,14 @@
-package com.example.newserial.domain.member.payload.response;
+package com.example.newserial.domain.member.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
 @Getter
 @Setter
-public class UserInfoResponse {
+@AllArgsConstructor
+public class MemberResponseDto {
     private Long id;
     private String email;
     private String AccessToken;

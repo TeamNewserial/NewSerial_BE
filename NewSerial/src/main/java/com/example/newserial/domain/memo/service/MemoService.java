@@ -24,10 +24,10 @@ public class MemoService {
     private final NewsRepository newsRepository;
     private final MemberRepository memberRepository;
 
+
     @Transactional
-    public MemoResponseDto save(MemoSaveRequestDto requestDto, Long newsId) {
+    public MemoResponseDto save(MemoSaveRequestDto requestDto, Long newsId, Member member) {
         News news = getNews(newsId);
-        Member member = getMember(requestDto.getMemberId());
         if (memoRepository.findById(new MemoId(member, news)).isPresent()) {
             throw new BadRequestException("메모를 중복해서 작성할 수 없습니다.", ErrorCode.BAD_REQUEST);
         }
@@ -41,17 +41,15 @@ public class MemoService {
     }
 
     @Transactional
-    public MemoResponseDto update(MemoUpdateRequestDto requestDto, Long newsId) {
+    public MemoResponseDto update(MemoUpdateRequestDto requestDto, Long newsId, Member member) {
         News news = getNews(newsId);
-        Member member = getMember(requestDto.getMemberId());
         Memo memo = getMemo(new MemoId(member, news));
         memo.update(requestDto.getBody());
         return new MemoResponseDto(memo);
     }
 
     @Transactional(readOnly = true)
-    public MemoResponseDto read(Long newsId, Long memberId) {
-        Member member = getMember(memberId);
+    public MemoResponseDto read(Long newsId, Member member) {
         News news = getNews(newsId);
         Memo memo = getMemo(new MemoId(member, news));
         return new MemoResponseDto(memo);

@@ -6,6 +6,7 @@ import com.example.newserial.domain.member.config.redis.RedisService;
 import com.example.newserial.domain.member.config.services.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -52,10 +53,24 @@ public class JwtUtils {
         }
     }
 
+    //authentication 헤더에서 토큰 꺼내기
+    public String getAccessTokenFromAuthorization(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        return removeBearer(token);
+    }
+
     //토큰에서 "Bearer " 지우기
     public String removeBearer(String token) {
         if (token.contains("Bearer ")) {
             return token.replace("Bearer ", "");
+        }
+        return token;
+    }
+
+    //토큰에 "Bearer " 붙이기
+    public String addBearer(String token) {
+        if (!token.contains("Bearer ")) {
+            return String.join(" ", "Bearer", token);
         }
         return token;
     }
@@ -68,11 +83,6 @@ public class JwtUtils {
         return Rtcookie;
     }
 
-    //쿠키 삭제
-    public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from(RTCookie, null).path("/").build();
-        return cookie;
-    }
 
     //토큰에서 이메일 꺼내기
     public String getEmailFromJwtToken(String token) {
@@ -96,19 +106,17 @@ public class JwtUtils {
             }
             return true;
         } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
+            logger.error("유효하지 않은 토큰입니다: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
+            logger.error("만료된 토큰입니다: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            logger.error("JWT token is unsupported: {}", e.getMessage());
+            logger.error("지원되지 않는 jwt 토큰입니다: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty: {}", e.getMessage());
+            logger.error("비어있는 토큰입니다: {}", e.getMessage());
         }
         return false;
     }
 
-
-    //TODO accessToken, refreshToken 생성
     //accessToken 발급
     public String generateAccessTokenFromEmail(String email) {
         return Jwts.builder()
@@ -139,6 +147,11 @@ public class JwtUtils {
         long remainTimeMillis = expirationDate.getTime() - System.currentTimeMillis();
         int ttlMillis = (int) Math.max(remainTimeMillis, 0); //음수 방지
         return ttlMillis;
+    }
+
+    public Jwt getTokenClaims(String token) {
+        token = removeBearer(token);
+        return Jwts.parser().setSigningKey(key()).parseClaimsJws(token);
     }
 
 }

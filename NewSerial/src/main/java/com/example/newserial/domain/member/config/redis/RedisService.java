@@ -1,5 +1,6 @@
 package com.example.newserial.domain.member.config.redis;
 
+import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
