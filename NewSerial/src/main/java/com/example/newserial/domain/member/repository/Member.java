@@ -1,13 +1,9 @@
 package com.example.newserial.domain.member.repository;
 
 import com.example.newserial.domain.bookmark.repository.Bookmark;
-import com.example.newserial.domain.memo.repository.Memo;
-import com.example.newserial.domain.quiz.repository.News_quiz_attempt;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.example.newserial.domain.quiz.repository.NewsQuizAttempt;
+import com.example.newserial.domain.quiz.repository.OxQuizAttempt;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
@@ -20,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name="member")
 public class Member {
     public Member(String email, String password) {
         this.email = email;
@@ -43,6 +40,9 @@ public class Member {
     private List<Bookmark> bookmarks=new ArrayList<>();
 
     @OneToMany(mappedBy="member")
-    private List<News_quiz_attempt> news_quiz_attempts=new ArrayList<>();
+    private List<NewsQuizAttempt> newsQuizAttempts=new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<OxQuizAttempt> oxQuizAttempts=new ArrayList<>();
 
 }

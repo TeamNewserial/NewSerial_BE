@@ -14,10 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="OX_QUIZ_ATTEMPT")
+@Table(name="ox_quiz_attempt")
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(OxAttemptId.class)
+@IdClass(OxQuizAttemptId.class)
 public class OxQuizAttempt extends BaseTimeEntity {
     /**
      * PK: {member_id(FK)    bigint | OX_quiz_id(FK)    bigint}

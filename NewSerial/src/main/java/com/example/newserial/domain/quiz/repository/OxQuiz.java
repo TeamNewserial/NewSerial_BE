@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="OX_QUIZ")
+@Table(name="ox_quiz")
 public class OxQuiz extends BaseTimeEntity {
     /**
      * PK: OX_quiz_id    bigint
@@ -24,10 +24,12 @@ public class OxQuiz extends BaseTimeEntity {
     @Column(name="ox_quiz_id")
     private Long oxQuizId;
 
+    @Column(columnDefinition = "TEXT")
     private String oxQuestion;
 
     @Column(length = 1)
     private String oxAnswer;
 
+    @Column(columnDefinition = "TEXT")
     private String oxExplanation;
 }

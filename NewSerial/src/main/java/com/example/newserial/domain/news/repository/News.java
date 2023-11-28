@@ -1,23 +1,10 @@
 package com.example.newserial.domain.news.repository;
 
-import com.example.newserial.domain.bookmark.repository.Bookmark;
 import com.example.newserial.domain.category.repository.Category;
-import com.example.newserial.domain.memo.repository.Memo;
-import com.example.newserial.domain.quiz.repository.News_quiz;
-import com.example.newserial.domain.quiz.repository.News_quiz_attempt;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name="news")
 public class News {
 
     @Id
