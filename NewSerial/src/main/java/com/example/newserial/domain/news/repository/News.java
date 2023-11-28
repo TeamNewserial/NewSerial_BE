@@ -1,21 +1,10 @@
 package com.example.newserial.domain.news.repository;
 
-import com.example.newserial.domain.bookmark.repository.Bookmark;
 import com.example.newserial.domain.category.repository.Category;
-import com.example.newserial.domain.memo.repository.Memo;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name="news")
 public class News {
 
     @Id
@@ -48,9 +38,15 @@ public class News {
     @JoinColumn(name="category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
-    private List<Memo> memos; //이게 맞나
-
-//    @OneToOne(fetch = FetchType.LAZY)
+//    @OneToOne(mappedBy="news")
 //    private Bookmark bookmark;
+
+//    @OneToOne(mappedBy = "news")
+//    private News_quiz news_quiz;
+//
+//    @OneToOne(mappedBy = "news")
+//    private News_quiz_attempt news_quiz_attempt;
+
+//    @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
+//    private List<Memo> memos; //이게 맞나
 }
