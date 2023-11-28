@@ -10,13 +10,8 @@ import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;
 import com.example.newserial.domain.memo.repository.MemoRepository;
-<<<<<<< HEAD
-import com.example.newserial.domain.news.News;
-import com.example.newserial.domain.news.NewsRepository;
-=======
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
->>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

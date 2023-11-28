@@ -1,4 +1,4 @@
-package com.example.newserial.domain.bookmark.repository;
+package com.example.newserial.domain.quiz.repository;
 
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.news.repository.News;
@@ -7,13 +7,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class BookmarkId implements Serializable {
-
+public class News_quiz_attemptId implements Serializable {
     private Member member;
     private News news;
+
 }

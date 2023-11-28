@@ -3,6 +3,8 @@ package com.example.newserial.domain.news.repository;
 import com.example.newserial.domain.bookmark.repository.Bookmark;
 import com.example.newserial.domain.category.repository.Category;
 import com.example.newserial.domain.memo.repository.Memo;
+import com.example.newserial.domain.quiz.repository.News_quiz;
+import com.example.newserial.domain.quiz.repository.News_quiz_attempt;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -48,9 +50,15 @@ public class News {
     @JoinColumn(name="category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
-    private List<Memo> memos; //이게 맞나
-
-//    @OneToOne(fetch = FetchType.LAZY)
+//    @OneToOne(mappedBy="news")
 //    private Bookmark bookmark;
+
+//    @OneToOne(mappedBy = "news")
+//    private News_quiz news_quiz;
+//
+//    @OneToOne(mappedBy = "news")
+//    private News_quiz_attempt news_quiz_attempt;
+
+//    @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
+//    private List<Memo> memos; //이게 맞나
 }

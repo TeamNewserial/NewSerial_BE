@@ -2,6 +2,7 @@ package com.example.newserial.domain.news.service;
 
 import com.example.newserial.domain.news.config.ChatGptConfig;
 import com.example.newserial.domain.news.dto.*;
+import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -21,7 +22,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,27 +85,72 @@ public class NewsService {
         return responseMono;
     }
 
-    //날짜별 뉴스 리스트 조회 기능
-    public TotalNewsListResponseDto findAllByDate(Timestamp targetDate, Pageable pageable){
-        List<NewsListResponseDto> newsList=new ArrayList<>();
-        newsList=newsRepository.findAllByDate(targetDate).stream()
-                .map(news-> new NewsListResponseDto(news))
-                .collect(Collectors.toList()); //해당 날짜에 크롤링된 뉴스 리스트 생성
+//    //날짜별 뉴스 리스트 조회 기능 // 데이터 크롤링 후 사진, 신문사 추가 필요
+//    public TotalNewsListResponseDto dateNews(Timestamp targetDate, Pageable pageable){
+//        List<NewsListResponseDto> newsDtoList=new ArrayList<>();
+////        newsList=newsRepository.findAllByDate(targetDate).stream()
+////                .map(news-> new NewsListResponseDto(news))
+////                .collect(Collectors.toList()); //해당 날짜에 크롤링된 뉴스 리스트 생성
+//
+//        List<News> newsList=newsRepository.findAllByDate(targetDate);
+//
+//        for(News news:newsList){
+//            Timestamp date=news.getDate();
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00");
+//            String newsDate=sdf.format(date);
+//            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getTitle(),
+//                    news.getCategory().getName(), newsDate);
+//            newsDtoList.add(newsListResponseDto);
+//        }
+//
+//        //페이징
+//        List<NewsListResponseDto> pagingNews=new ArrayList<>();
+//
+//        int startIndex = (int) pageable.getOffset();
+//        int endIndex = Math.min(startIndex + pageable.getPageSize(), newsDtoList.size());
+//
+//        List<NewsListResponseDto> paginatednews=new ArrayList<>(newsDtoList).subList(startIndex, endIndex);
+//
+//        for(NewsListResponseDto news:paginatednews){
+//            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getTitle(), news.getCategory_name(), news.getDate());
+//            pagingNews.add(newsListResponseDto);
+//        }
+//
+//        TotalNewsListResponseDto responseDto=new TotalNewsListResponseDto(newsDtoList.size(), pagingNews);
+//        return responseDto;
+//    }
 
-        //페이징
-        List<NewsListResponseDto> pagingNews=new ArrayList<>();
+    //뉴스 상세페이지 조회 기능
+    @Transactional
+    public TodayNewsDto shortNews(Long id) {
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 뉴스가 없습니다."));
 
-        int startIndex = (int) pageable.getOffset();
-        int endIndex = Math.min(startIndex + pageable.getPageSize(), newsList.size());
+//        if (!viewRepository.findByNews(news).isPresent()) {
+//            // 해당 newsId를 가진 View 엔티티가 없으면 새로 생성하여 저장
+//            View view=View.builder()
+//                    .news(news)
+//                    .count(1L)
+//                    .build();
+//
+//            viewRepository.save(view);
+//
+//        } else {
+//            // 이미 해당 newsId를 가진 View 엔티티가 있으면 조회수 증가
+//            viewRepository.updateViews(id);
+//        }
 
-        List<NewsListResponseDto> paginatednews=new ArrayList<>(newsList).subList(startIndex, endIndex);
+//        Timestamp date=news.getDate();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00");
+//        String newsDate=sdf.format(date);
 
-        for(NewsListResponseDto news:paginatednews){
-            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getTitle(), news.getCategory_name(), news.getDate());
-            pagingNews.add(newsListResponseDto);
-        }
+        String newsbody=news.getBody();
+        newsbody=newsbody.replace("\n", "");
+        String[] sentences = newsbody.split("(?<=\\.)");
+        List<String> newsBodyList = Arrays.asList(sentences);
 
-        TotalNewsListResponseDto responseDto=new TotalNewsListResponseDto(newsList.size(), pagingNews);
-        return responseDto;
+        TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), news.getTitle(), newsBodyList, news.getCategory().getName(), news.getUrl());
+
+        return todayNewsDto;
     }
 }

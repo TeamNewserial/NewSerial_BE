@@ -21,11 +21,11 @@ public class Bookmark extends BaseTimeEntity {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id")
+    @JoinColumn(name="member_id", referencedColumnName = "id")
     private Member member;
 
     @Id
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="news_id")
+    @JoinColumn(name="news_id", referencedColumnName = "id")
     private News news;
 }
