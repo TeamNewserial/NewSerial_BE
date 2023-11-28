@@ -8,14 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+//@Builder
 public class MemoSaveRequestDto {
     private String body;
-    private Long memberId;
-
-    @Builder
-    public MemoSaveRequestDto(String body) {
-        this.body = body;
-    }
-
 }

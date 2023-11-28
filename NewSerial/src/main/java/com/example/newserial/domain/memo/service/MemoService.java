@@ -10,13 +10,8 @@ import com.example.newserial.domain.memo.dto.MemoUpdateRequestDto;
 import com.example.newserial.domain.memo.repository.Memo;
 import com.example.newserial.domain.memo.repository.MemoId;
 import com.example.newserial.domain.memo.repository.MemoRepository;
-<<<<<<< HEAD
-import com.example.newserial.domain.news.News;
-import com.example.newserial.domain.news.NewsRepository;
-=======
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
->>>>>>> 51772be23a5a9daf7bfd060e07f0519e3cf6ff25
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +24,10 @@ public class MemoService {
     private final NewsRepository newsRepository;
     private final MemberRepository memberRepository;
 
+
     @Transactional
-    public MemoResponseDto save(MemoSaveRequestDto requestDto, Long newsId) {
+    public MemoResponseDto save(MemoSaveRequestDto requestDto, Long newsId, Member member) {
         News news = getNews(newsId);
-        Member member = getMember(requestDto.getMemberId());
         if (memoRepository.findById(new MemoId(member, news)).isPresent()) {
             throw new BadRequestException("메모를 중복해서 작성할 수 없습니다.", ErrorCode.BAD_REQUEST);
         }
@@ -46,17 +41,15 @@ public class MemoService {
     }
 
     @Transactional
-    public MemoResponseDto update(MemoUpdateRequestDto requestDto, Long newsId) {
+    public MemoResponseDto update(MemoUpdateRequestDto requestDto, Long newsId, Member member) {
         News news = getNews(newsId);
-        Member member = getMember(requestDto.getMemberId());
         Memo memo = getMemo(new MemoId(member, news));
         memo.update(requestDto.getBody());
         return new MemoResponseDto(memo);
     }
 
     @Transactional(readOnly = true)
-    public MemoResponseDto read(Long newsId, Long memberId) {
-        Member member = getMember(memberId);
+    public MemoResponseDto read(Long newsId, Member member) {
         News news = getNews(newsId);
         Memo memo = getMemo(new MemoId(member, news));
         return new MemoResponseDto(memo);
