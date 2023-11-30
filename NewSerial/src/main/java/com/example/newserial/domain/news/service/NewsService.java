@@ -144,12 +144,15 @@ public class NewsService {
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00");
 //        String newsDate=sdf.format(date);
 
+        String newsTitle=news.getTitle();
+        newsTitle=newsTitle.replace("\n", "");
+
         String newsbody=news.getBody();
         newsbody=newsbody.replace("\n", "");
         String[] sentences = newsbody.split("(?<=\\.)");
         List<String> newsBodyList = Arrays.asList(sentences);
 
-        TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), news.getTitle(), newsBodyList, news.getCategory().getName(), news.getUrl());
+        TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), newsTitle, newsBodyList, news.getCategory().getName(), news.getUrl());
 
         return todayNewsDto;
     }

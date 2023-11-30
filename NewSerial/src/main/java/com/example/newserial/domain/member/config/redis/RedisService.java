@@ -1,13 +1,12 @@
 package com.example.newserial.domain.member.config.redis;
 
-import com.example.newserial.domain.member.config.jwt.JwtUtils;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -54,4 +53,5 @@ public class RedisService {
     public boolean hasKeyBlackList(String key) {
         return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
     }
+
 }

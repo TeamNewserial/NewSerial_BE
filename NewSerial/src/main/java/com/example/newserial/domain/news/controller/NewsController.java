@@ -8,16 +8,20 @@ import com.example.newserial.domain.news.dto.QuestionRequestDto;
 import com.example.newserial.domain.news.dto.TodayNewsDto;
 import com.example.newserial.domain.news.service.NewsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -38,14 +42,25 @@ public class NewsController {
     public ResponseEntity<?> ask(Locale locale, HttpServletRequest request, HttpServletResponse response, @RequestBody QuestionRequestDto questionRequest) {
         try {
             Member member = authDataService.checkAccessToken(request);
-            return ResponseEntity.ok(newsService.ask(questionRequest));
+            ChatGptResponseDto chatGptResponseDto = newsService.ask(questionRequest).block();
+            String content = getContentFromResponse(chatGptResponseDto); //아래 메소드 사용
+            return ResponseEntity.ok(content); //챗gpt 응답 반환
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
-        } catch (JsonProcessingException je) {
+        }
+        catch (JsonProcessingException je) { //챗gpt 응답을 받아오는 과정에서 오류가 나는 경우
             je.printStackTrace();
-            return ResponseEntity.ok(Mono.just((ChatGptResponseDto) Collections.emptyList()));
+            return ResponseEntity.ok((ChatGptResponseDto) Collections.emptyList()); //빈 리스트 반환
         }
     }
+
+    //챗gpt 응답에서 문자열 응답 부분만 추출
+    private String getContentFromResponse(ChatGptResponseDto chatGptResponseDto) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(objectMapper.writeValueAsString(chatGptResponseDto));
+        return jsonNode.at("/choices/0/message/content").asText();
+    }
+
 //
 //    //날짜별 뉴스 리스트 조회 기능
 //    @GetMapping("/last-news/{date}") //받을때 시간은 00:00:00이나 12:59:59 이런식으로 고정해두고 받을 수 있도록 해야 함
