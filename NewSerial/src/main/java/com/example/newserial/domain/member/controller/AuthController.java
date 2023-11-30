@@ -40,7 +40,7 @@ public class AuthController {
                         userDetails.getEmail(), accessToken));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/members")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestDto request) {
 
         //이미 등록된 계정인지 확인
