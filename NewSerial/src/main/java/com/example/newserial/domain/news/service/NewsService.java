@@ -6,6 +6,7 @@ import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class NewsService {
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
     //패러프레이징 기능
-    public Mono<ChatGptResponseDto> ask(QuestionRequestDto questionRequest) throws JsonProcessingException {
+    public String ask(QuestionRequestDto questionRequest) throws JsonProcessingException {
         WebClient client = WebClient.builder()
                 .baseUrl(ChatGptConfig.CHAT_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //defaultHeader: 모든 요청에 사용할 헤더
@@ -82,7 +83,16 @@ public class NewsService {
                 .retrieve()
                 .bodyToMono(ChatGptResponseDto.class); // ChatGptResponseDto로 받기
 
-        return responseMono;
+        ChatGptResponseDto chatGptResponseDto = responseMono.block();
+        String content = getContentFromResponse(chatGptResponseDto);
+        return content;
+    }
+
+    //챗gpt 응답에서 문자열 응답 부분만 추출
+    public String getContentFromResponse(ChatGptResponseDto chatGptResponseDto) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(objectMapper.writeValueAsString(chatGptResponseDto));
+        return jsonNode.at("/choices/0/message/content").asText();
     }
 
 //    //날짜별 뉴스 리스트 조회 기능 // 데이터 크롤링 후 사진, 신문사 추가 필요
@@ -156,4 +166,8 @@ public class NewsService {
 
         return todayNewsDto;
     }
+
+    //뉴스 기사에 대한 퀴즈 반환 메소드
+//    @Transactional
+//    public
 }
