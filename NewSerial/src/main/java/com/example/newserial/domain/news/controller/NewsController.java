@@ -42,8 +42,7 @@ public class NewsController {
     public ResponseEntity<?> ask(Locale locale, HttpServletRequest request, HttpServletResponse response, @RequestBody QuestionRequestDto questionRequest) {
         try {
             Member member = authDataService.checkAccessToken(request);
-            ChatGptResponseDto chatGptResponseDto = newsService.ask(questionRequest).block();
-            String content = getContentFromResponse(chatGptResponseDto); //아래 메소드 사용
+            String content= newsService.ask(questionRequest);
             return ResponseEntity.ok(content); //챗gpt 응답 반환
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
@@ -52,13 +51,6 @@ public class NewsController {
             je.printStackTrace();
             return ResponseEntity.ok((ChatGptResponseDto) Collections.emptyList()); //빈 리스트 반환
         }
-    }
-
-    //챗gpt 응답에서 문자열 응답 부분만 추출
-    private String getContentFromResponse(ChatGptResponseDto chatGptResponseDto) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(objectMapper.writeValueAsString(chatGptResponseDto));
-        return jsonNode.at("/choices/0/message/content").asText();
     }
 
 //
