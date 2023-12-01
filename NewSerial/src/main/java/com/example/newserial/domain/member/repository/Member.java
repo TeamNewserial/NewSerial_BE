@@ -45,4 +45,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<OxQuizAttempt> oxQuizAttempts=new ArrayList<>();
 
+    @OneToOne(mappedBy = "member")
+    private SocialMember socialMember;
+
 }
