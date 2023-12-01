@@ -52,7 +52,7 @@ public class OAuthAttributesDto {
         return SocialMember.builder()
                 .member(member)
                 .socialId(oauth2UserInfo.getId())
-                .provider(socialType.name())
+                .socialType(SocialType.valueOf(socialType.name()))
                 .build();
     }
 }
