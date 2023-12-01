@@ -8,18 +8,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name="social_member")
 public class SocialMember {
-    /**
-     * member_id long
-     * social_id text
-     * provider varchar(30)
-     */
+
+    @Builder
+    public SocialMember(Member member, String socialId, String provider) {
+        this.member = member;
+        this.socialId = socialId;
+        this.provider = provider;
+    }
+
+
 
     @Id
     @OneToOne(fetch = FetchType.LAZY)

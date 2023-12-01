@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="member")
 public class Member {
+    @Builder
     public Member(String email, String password) {
         this.email = email;
         this.password = password;
