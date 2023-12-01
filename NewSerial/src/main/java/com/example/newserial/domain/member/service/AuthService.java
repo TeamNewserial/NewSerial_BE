@@ -2,6 +2,7 @@ package com.example.newserial.domain.member.service;
 
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.config.jwt.TokenCarrier;
+import com.example.newserial.domain.member.config.oauth2.CustomOAuth2User;
 import com.example.newserial.domain.member.config.services.UserDetailsImpl;
 import com.example.newserial.domain.member.dto.request.LoginRequestDto;
 import com.example.newserial.domain.member.dto.request.SignupRequestDto;
@@ -47,6 +48,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .build();
     }
+
 
     public boolean doesEmailExists(SignupRequestDto request) {
         return memberRepository.existsByEmail(request.getEmail());

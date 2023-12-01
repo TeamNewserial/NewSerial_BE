@@ -8,6 +8,7 @@ import com.example.newserial.domain.member.dto.request.SignupRequestDto;
 import com.example.newserial.domain.member.dto.response.MessageResponseDto;
 import com.example.newserial.domain.member.dto.response.MemberResponseDto;
 import com.example.newserial.domain.member.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,24 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie)
                 .body(new MemberResponseDto(userDetails.getId(),
                         userDetails.getEmail(), accessToken));
+    }
+
+    @PostMapping("/oauth2/redirect")
+    public ResponseEntity<?> oauthLoginSuccess(HttpServletRequest request) {
+        //세션에서 토큰, 쿠키 가져오기
+        String accessToken = (String) request.getSession().getAttribute("accessToken");
+        String cookie = (String) request.getSession().getAttribute("refreshCookie");
+        Long id = (Long) request.getSession().getAttribute("id");
+        String email = (String) request.getSession().getAttribute("email");
+
+        //세션 정보 삭제
+        request.getSession().removeAttribute("accessToken");
+        request.getSession().removeAttribute("refreshCookie");
+        request.getSession().removeAttribute("id");
+        request.getSession().removeAttribute("email");
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie)
+                .body(new MemberResponseDto(id, email, accessToken));
     }
 
     @PostMapping("/signup")

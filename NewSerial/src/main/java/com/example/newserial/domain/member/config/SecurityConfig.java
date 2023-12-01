@@ -4,6 +4,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.example.newserial.domain.member.config.jwt.AuthEntryPointJwt;
 import com.example.newserial.domain.member.config.jwt.AuthTokenFilter;
+import com.example.newserial.domain.member.config.oauth2.handler.OAuth2LoginFailureHandler;
+import com.example.newserial.domain.member.config.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.example.newserial.domain.member.config.services.SaveAndDeleteTokenFromRedis;
 import com.example.newserial.domain.member.config.services.UserDetailsServiceImpl;
 import java.util.Arrays;
@@ -37,6 +39,8 @@ public class SecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final SaveAndDeleteTokenFromRedis saveAndDeleteTokenFromRedis;
     private final AuthTokenFilter authTokenFilter;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     @Value("${jwtCookieNameRT}")
     private String RTcookie;
@@ -83,9 +87,14 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(withDefaults())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.anyRequest().permitAll()
+                )
+                .oauth2Login(oauth2login ->
+                        oauth2login
+                                .successHandler(oAuth2LoginSuccessHandler)
+                                .failureHandler(oAuth2LoginFailureHandler)
                 );
 
         http.authenticationProvider(authenticationProvider());
