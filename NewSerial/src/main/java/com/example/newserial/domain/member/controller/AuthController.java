@@ -44,6 +44,7 @@ public class AuthController {
                         userDetails.getEmail(), accessToken));
     }
 
+  
     @GetMapping ("/oauth2/redirect")
     public ResponseEntity<?> oauthLoginSuccess(HttpServletRequest request) {
         //세션에서 토큰, 쿠키 가져오기
@@ -69,7 +70,9 @@ public class AuthController {
                 .body(new MemberResponseDto(id, email, accessToken));
     }
 
-    @PostMapping("/signup")
+
+
+    @PostMapping("/members")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestDto request) {
 
         //이미 등록된 계정인지 확인
