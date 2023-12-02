@@ -28,7 +28,7 @@ public class SocialMember {
     private Long memberId;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="member_id")
     private Member member;
 
