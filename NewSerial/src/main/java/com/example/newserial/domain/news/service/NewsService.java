@@ -29,6 +29,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -61,7 +63,7 @@ public class NewsService {
                 .build();
 
         String prompt = questionRequest.getQuestion() + "\n" + "위 기사가 이해가 안가는데 더 쉽게 설명해줄 수 있어?";
-        System.out.println("prompt = " + prompt);
+//        System.out.println("prompt = " + prompt);
 
         List<ChatGptMessage> messages = new ArrayList<>();
         messages.add(ChatGptMessage.builder()
@@ -166,8 +168,4 @@ public class NewsService {
 
         return todayNewsDto;
     }
-
-    //뉴스 기사에 대한 퀴즈 반환 메소드
-//    @Transactional
-//    public
 }

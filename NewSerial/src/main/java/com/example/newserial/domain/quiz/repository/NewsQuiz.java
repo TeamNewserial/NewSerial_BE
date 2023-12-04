@@ -3,18 +3,18 @@ package com.example.newserial.domain.quiz.repository;
 import com.example.newserial.domain.news.repository.News;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name="news_quiz")
 public class NewsQuiz {
-    @Id
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="news_id")
+//    @JoinColumn(name="news_id")
     private News news;
 
     @Column(columnDefinition = "TEXT")
@@ -25,4 +25,12 @@ public class NewsQuiz {
 
     @Column(columnDefinition = "TEXT")
     private String news_explanation;
+
+    @Builder
+    public NewsQuiz(News news, String news_question, String news_answer, String news_explanation) {
+        this.news = news;
+        this.news_question = news_question;
+        this.news_answer = news_answer;
+        this.news_explanation = news_explanation;
+    }
 }
