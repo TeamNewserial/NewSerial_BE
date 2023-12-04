@@ -2,6 +2,7 @@ package com.example.newserial.domain.member.config.jwt;
 
 import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.error.ErrorCode;
+import com.example.newserial.domain.member.config.oauth2.CustomOAuth2User;
 import com.example.newserial.domain.member.config.redis.RedisService;
 import com.example.newserial.domain.member.config.services.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
@@ -78,6 +79,12 @@ public class JwtUtils {
     //토큰 저장한 쿠키 생성(+RT - Secure, HttpOnly)
     public ResponseCookie generateRefreshTokenCookie(UserDetailsImpl userPrincipal) {
         String RefreshToken = generateRefreshTokenFromEmail(userPrincipal.getEmail());
+        //https 사용시 secure 설정 true
+        ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
+        return Rtcookie;
+    }
+    public ResponseCookie generateRefreshTokenCookie(CustomOAuth2User user) {
+        String RefreshToken = generateRefreshTokenFromEmail(user.getEmail());
         //https 사용시 secure 설정 true
         ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
         return Rtcookie;

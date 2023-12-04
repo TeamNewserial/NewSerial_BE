@@ -8,9 +8,12 @@ import com.example.newserial.domain.member.dto.request.SignupRequestDto;
 import com.example.newserial.domain.member.dto.response.MessageResponseDto;
 import com.example.newserial.domain.member.dto.response.MemberResponseDto;
 import com.example.newserial.domain.member.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 //@CrossOrigin(origins = "http://10.0.2.15:8081")
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -39,6 +43,34 @@ public class AuthController {
                 .body(new MemberResponseDto(userDetails.getId(),
                         userDetails.getEmail(), accessToken));
     }
+
+  
+    @GetMapping ("/oauth2/redirect")
+    public ResponseEntity<?> oauthLoginSuccess(HttpServletRequest request) {
+        //세션에서 토큰, 쿠키 가져오기
+        log.info("세션에서 정보 가져옴");
+        String accessToken = (String) request.getSession().getAttribute("accessToken");
+        String cookie = (String) request.getSession().getAttribute("refreshCookie");
+        Long id = (Long) request.getSession().getAttribute("id");
+        String email = (String) request.getSession().getAttribute("email");
+
+        //Null checks
+        if (accessToken == null || cookie == null || id == null || email == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Session attributes are missing");
+        }
+
+        //세션 정보 삭제
+        request.getSession().removeAttribute("accessToken");
+        request.getSession().removeAttribute("refreshCookie");
+        request.getSession().removeAttribute("id");
+        request.getSession().removeAttribute("email");
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie)
+                .body(new MemberResponseDto(id, email, accessToken));
+    }
+
+
 
     @PostMapping("/members")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestDto request) {
