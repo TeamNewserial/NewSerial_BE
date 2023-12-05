@@ -1,6 +1,7 @@
 package com.example.newserial.domain.news.repository;
 
 import com.example.newserial.domain.category.repository.Category;
+import com.example.newserial.domain.quiz.repository.NewsQuiz;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -38,12 +39,14 @@ public class News {
     @JoinColumn(name="category_id")
     private Category category;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "news")
+    @PrimaryKeyJoinColumn
+    private NewsQuiz newsQuiz;
+
 //    @OneToOne(mappedBy="news")
 //    private Bookmark bookmark;
 
-//    @OneToOne(mappedBy = "news")
-//    private News_quiz news_quiz;
-//
+
 //    @OneToOne(mappedBy = "news")
 //    private News_quiz_attempt news_quiz_attempt;
 

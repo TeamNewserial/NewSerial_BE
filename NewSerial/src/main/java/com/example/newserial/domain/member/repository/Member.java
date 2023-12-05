@@ -1,6 +1,7 @@
 package com.example.newserial.domain.member.repository;
 
 import com.example.newserial.domain.bookmark.repository.Bookmark;
+import com.example.newserial.domain.pet.repository.Pet;
 import com.example.newserial.domain.quiz.repository.NewsQuizAttempt;
 import com.example.newserial.domain.quiz.repository.OxQuizAttempt;
 import jakarta.persistence.*;
@@ -49,5 +50,9 @@ public class Member {
 
     @OneToOne(mappedBy = "member")
     private SocialMember socialMember;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "member")
+    @PrimaryKeyJoinColumn
+    private Pet pet;
 
 }

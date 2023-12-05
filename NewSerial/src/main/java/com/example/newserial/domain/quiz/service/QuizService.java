@@ -1,20 +1,24 @@
 package com.example.newserial.domain.quiz.service;
 
+import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.news.config.ChatGptConfig;
 import com.example.newserial.domain.news.dto.ChatGptMessage;
 import com.example.newserial.domain.news.dto.ChatGptRequestDto;
 import com.example.newserial.domain.news.dto.ChatGptResponseDto;
-import com.example.newserial.domain.news.dto.NewsQuizResponseDto;
+import com.example.newserial.domain.quiz.dto.NewsQuizAttemptRequestDto;
+import com.example.newserial.domain.quiz.dto.NewsQuizAttemptResponseDto;
+import com.example.newserial.domain.quiz.dto.NewsQuizResponseDto;
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
 import com.example.newserial.domain.quiz.repository.NewsQuiz;
+import com.example.newserial.domain.quiz.repository.NewsQuizAttempt;
+import com.example.newserial.domain.quiz.repository.NewsQuizAttemptRepository;
 import com.example.newserial.domain.quiz.repository.NewsQuizRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +41,13 @@ public class QuizService {
 
     private final NewsRepository newsRepository;
     private final NewsQuizRepository newsQuizRepository;
+    private final NewsQuizAttemptRepository newsQuizAttemptRepository;
 
     @Autowired
-    public QuizService(NewsRepository newsRepository, NewsQuizRepository newsQuizRepository){
+    public QuizService(NewsRepository newsRepository, NewsQuizRepository newsQuizRepository, NewsQuizAttemptRepository newsQuizAttemptRepository){
         this.newsRepository=newsRepository;
         this.newsQuizRepository=newsQuizRepository;
+        this.newsQuizAttemptRepository=newsQuizAttemptRepository;
     }
 
 
@@ -67,7 +73,7 @@ public class QuizService {
 
         News news=newsRepository.findById(newsId).get();
 
-        if(newsQuizRepository.existsByNews(news)){
+        if(newsQuizRepository.existsByNews(news)){ //뉴스에 대한 퀴즈가 이미 db에 저장돼있는 경우 db에서 가져와 반환
             NewsQuiz newsQuiz=newsQuizRepository.findByNews(news).get();
             String quiz=newsQuiz.getNews_question();
             String answer=newsQuiz.getNews_answer();
@@ -76,7 +82,7 @@ public class QuizService {
             return newsQuizResponseDto;
         }
 
-        else{
+        else{ //뉴스에 대한 퀴즈가 db에 없는 경우 챗gpt에 요청을 보내고 새로 저장 후 반환
             String newsBody=news.getBody();
             WebClient client = WebClient.builder()
                     .baseUrl(ChatGptConfig.CHAT_URL)
@@ -134,6 +140,7 @@ public class QuizService {
 
     }
 
+    @Transactional
     public String extractContent(String text, String start, String end) { //텍스트, 시작 키워드, 끝 키워드
         String patternString = start + ": (.+?)" + (end != null ? end : "(?=$)");
         Pattern pattern = Pattern.compile(patternString);
@@ -146,5 +153,40 @@ public class QuizService {
         }
     }
 
+    @Transactional
+    public NewsQuizAttemptResponseDto attemptNewsQuiz(Member member, NewsQuizAttemptRequestDto newsQuizAttemptRequestDto){ //뉴스 id, 사용자 정답 제출
+        News news=newsRepository.findById(newsQuizAttemptRequestDto.getNewsId()).get();
+        NewsQuiz newsQuiz=newsQuizRepository.findByNews(news).get();
+        String userAnswer=newsQuizAttemptRequestDto.getUserAnswer(); //사용자 정답
+        String qAnswer=newsQuiz.getNews_answer(); //뉴스 정답
+        String explanation= newsQuiz.getNews_explanation();
+
+        if (userAnswer.equals(qAnswer)){ //사용자 정답이 맞는 경우: 2점
+            NewsQuizAttempt newsQuizAttempt=NewsQuizAttempt.builder()
+                    .member(member)
+                    .news(news)
+                    .news_score(2)
+                    .news_submitted(userAnswer)
+                    .build();
+
+            newsQuizAttemptRepository.save(newsQuizAttempt);
+
+            NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto("맞았습니다", qAnswer, explanation);
+            return newsQuizAttemptResponseDto;
+        }
+        else{ //사용자 정답이 틀린 경우: 1점
+            NewsQuizAttempt newsQuizAttempt=NewsQuizAttempt.builder()
+                    .member(member)
+                    .news(news)
+                    .news_score(1)
+                    .news_submitted(userAnswer)
+                    .build();
+
+            newsQuizAttemptRepository.save(newsQuizAttempt);
+
+            NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto("틀렸습니다", qAnswer, explanation);
+            return newsQuizAttemptResponseDto;
+        }
+    }
 
 }

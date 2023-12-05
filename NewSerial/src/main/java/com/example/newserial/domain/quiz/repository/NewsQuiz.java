@@ -12,10 +12,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="news_quiz")
 public class NewsQuiz {
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="news_id")
-    private News news;
+    @Id
+    @Column(name="news_id")
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
     private String news_question;
@@ -33,4 +32,9 @@ public class NewsQuiz {
         this.news_answer = news_answer;
         this.news_explanation = news_explanation;
     }
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name="news_id")
+    private News news;
 }

@@ -1,4 +1,4 @@
-package com.example.newserial.domain.news.dto;
+package com.example.newserial.domain.quiz.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
