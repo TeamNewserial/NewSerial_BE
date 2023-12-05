@@ -20,9 +20,8 @@ public class Pet {
      * pet_image    text
      */
     @Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id")
-    private Member member;
+    @Column(name="member_id")
+    private Long id;
 
     @Column(length = 10)
     private String ranks;
@@ -31,5 +30,10 @@ public class Pet {
 
     @Column(columnDefinition = "TEXT")
     private String petImage;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name="member_id")
+    private Member member;
 
 }
