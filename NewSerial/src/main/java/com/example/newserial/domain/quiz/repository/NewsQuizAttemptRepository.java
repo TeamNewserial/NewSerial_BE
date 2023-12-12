@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface NewsQuizAttemptRepository extends JpaRepository<NewsQuizAttempt, NewsQuizAttemptId> {
+
+    boolean existsByMember(Member member);
     Optional<NewsQuizAttempt> findByMember(Member member);
 }

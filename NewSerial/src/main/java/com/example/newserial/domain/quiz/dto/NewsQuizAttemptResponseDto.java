@@ -5,14 +5,19 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class NewsQuizAttemptResponseDto {
+public class NewsQuizAttemptResponseDto { //유저가 문제를 푼 경우 반환하는 dto
+    private String question;
+    private String userAnswer;
+    private String quizAnswer;
+
     private String result;
-    private String answer;
     private String explanation;
 
-    public NewsQuizAttemptResponseDto(String result, String answer, String explanation) {
-        this.result=result;
-        this.answer = answer;
+    public NewsQuizAttemptResponseDto(String question, String userAnswer, String quizAnswer, String result, String explanation) {
+        this.question = question;
+        this.userAnswer = userAnswer;
+        this.quizAnswer = quizAnswer;
+        this.result = result;
         this.explanation = explanation;
     }
 }
