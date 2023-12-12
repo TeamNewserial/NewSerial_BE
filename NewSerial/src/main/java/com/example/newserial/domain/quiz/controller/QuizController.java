@@ -33,7 +33,7 @@ public class QuizController {
     public ResponseEntity<?> getNewsQuiz(@PathVariable("id") Long id, HttpServletRequest request){
         try {
             Member member = authDataService.checkAccessToken(request);
-            return ResponseEntity.ok(quizService.getNewsQuiz(id));
+            return quizService.getNewsQuiz(member, id);
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         } catch (JsonProcessingException e) {
@@ -42,7 +42,7 @@ public class QuizController {
     }
 
     //뉴시리얼 퀴즈 정답 제출
-    @PostMapping("/newserial-quiz/member")
+    @PostMapping("/newserial-quiz/answer")
     public ResponseEntity<?> attemptNewsQuiz(@RequestBody NewsQuizAttemptRequestDto newsQuizAttemptRequestDto, HttpServletRequest request){
         try{
             Member member = authDataService.checkAccessToken(request);

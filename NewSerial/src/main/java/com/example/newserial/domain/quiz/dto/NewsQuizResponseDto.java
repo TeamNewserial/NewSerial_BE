@@ -5,15 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class NewsQuizResponseDto {
+public class NewsQuizResponseDto { // 유저가 문제를 풀지 않았을 경우 반환하는 dto
 
     private String question;
-    private String answer;
-    private String explanation;
 
-    public NewsQuizResponseDto(String question, String answer, String explanation) {
+    public NewsQuizResponseDto(String question) {
         this.question = question;
-        this.answer = answer;
-        this.explanation = explanation;
     }
 }
