@@ -1,13 +1,12 @@
-package com.example.newserial.domain.news.service;
+package com.example.newserial.domain.search.service;
 
-import com.example.newserial.domain.news.dto.search.SearchResponseDto;
-import com.example.newserial.domain.news.dto.search.SuggestResponseDto;
+import com.example.newserial.domain.search.dto.SearchResponseDto;
+import com.example.newserial.domain.search.dto.SuggestResponseDto;
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
-import com.example.newserial.domain.news.repository.Suggestion;
-import com.example.newserial.domain.news.repository.SuggestionRepository;
+import com.example.newserial.domain.search.repository.Suggestion;
+import com.example.newserial.domain.search.repository.SuggestionRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

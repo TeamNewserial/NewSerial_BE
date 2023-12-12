@@ -5,14 +5,13 @@ import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.news.dto.ChatGptResponseDto;
 import com.example.newserial.domain.news.dto.QuestionRequestDto;
-import com.example.newserial.domain.news.dto.search.SuggestRequestDto;
-import com.example.newserial.domain.news.dto.search.SuggestResponseDto;
+import com.example.newserial.domain.search.dto.SuggestRequestDto;
+import com.example.newserial.domain.search.dto.SuggestResponseDto;
 import com.example.newserial.domain.news.service.NewsService;
-import com.example.newserial.domain.news.service.SearchService;
+import com.example.newserial.domain.search.service.SearchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -29,13 +28,11 @@ public class NewsController {
 
     private final NewsService newsService;
     private final AuthDataService authDataService;
-    private final SearchService searchService;
 
     @Autowired
-    public NewsController(NewsService newsService, AuthDataService authDataService, SearchService searchService) {
+    public NewsController(NewsService newsService, AuthDataService authDataService) {
         this.newsService = newsService;
         this.authDataService = authDataService;
-        this.searchService = searchService;
     }
 
 
@@ -73,22 +70,6 @@ public class NewsController {
         }
     }
 
-    //뉴스 검색 기능
-    @GetMapping("/newserial/search/result")
-    public ResponseEntity<?> search(@RequestParam String keyword, @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
-        searchService.saveKeyword(keyword);
-        return ResponseEntity.ok(searchService.search(keyword, pageable));
-    }
 
-    //검색어 추천 기능
-    @PostMapping("/newserial/search")
-    @ResponseBody
-    public SuggestResponseDto getAutoCompleteResults(@RequestBody SuggestRequestDto request) {
-        return searchService.searchSuggest(request.getQuery());
-    }
-
-
-    //검색페이지 호출
-//    @GetMapping("/newserial/search")
 
 }

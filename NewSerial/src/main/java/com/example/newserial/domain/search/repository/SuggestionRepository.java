@@ -1,4 +1,4 @@
-package com.example.newserial.domain.news.repository;
+package com.example.newserial.domain.search.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

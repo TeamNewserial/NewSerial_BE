@@ -1,4 +1,4 @@
-package com.example.newserial.domain.news.dto.search;
+package com.example.newserial.domain.search.dto;
 
 
 import com.example.newserial.domain.category.repository.Category;
