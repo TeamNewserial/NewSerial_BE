@@ -85,7 +85,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .cors(withDefaults())
+//                .cors(withDefaults())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session ->
                         session
@@ -95,6 +95,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.anyRequest().permitAll()
                 )
+
                 .oauth2Login(oauth2login ->
                         oauth2login
                                 .successHandler(oAuth2LoginSuccessHandler)
