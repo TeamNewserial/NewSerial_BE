@@ -22,7 +22,7 @@ public class SearchController {
     private final SearchService searchService;
 
     //뉴스 검색 기능
-    @GetMapping("/newserial/search/result")
+    @GetMapping("/newserial/search")
     public ResponseEntity<?> search(@RequestParam String keyword, @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
         searchService.saveKeyword(keyword);
         return ResponseEntity.ok(searchService.search(keyword, pageable));
