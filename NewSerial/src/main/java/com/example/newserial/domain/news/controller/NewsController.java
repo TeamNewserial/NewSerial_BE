@@ -5,8 +5,10 @@ import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.news.dto.ChatGptResponseDto;
 import com.example.newserial.domain.news.dto.QuestionRequestDto;
+import com.example.newserial.domain.search.dto.SuggestRequestDto;
+import com.example.newserial.domain.search.dto.SuggestResponseDto;
 import com.example.newserial.domain.news.service.NewsService;
-import com.example.newserial.domain.news.service.SearchService;
+import com.example.newserial.domain.search.service.SearchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,13 +28,11 @@ public class NewsController {
 
     private final NewsService newsService;
     private final AuthDataService authDataService;
-    private final SearchService searchService;
 
     @Autowired
-    public NewsController(NewsService newsService, AuthDataService authDataService, SearchService searchService) {
+    public NewsController(NewsService newsService, AuthDataService authDataService) {
         this.newsService = newsService;
         this.authDataService = authDataService;
-        this.searchService = searchService;
     }
 
 
@@ -70,9 +70,6 @@ public class NewsController {
         }
     }
 
-    //뉴스 검색 기능
-    @GetMapping ("/newserial/search")
-    public ResponseEntity<?> search(@RequestParam String keyword, @PageableDefault(sort = "date", direction = Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(searchService.search(keyword, pageable));
-    }
+
+
 }
