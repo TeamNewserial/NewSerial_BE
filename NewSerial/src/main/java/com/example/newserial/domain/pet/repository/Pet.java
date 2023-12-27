@@ -23,8 +23,9 @@ public class Pet {
     @Column(name="member_id")
     private Long id;
 
-    @Column(length = 10)
-    private String ranks;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="pet_condition_id")
+    private PetCondition petCondition;
 
     private int score;
 

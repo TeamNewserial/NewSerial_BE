@@ -5,15 +5,15 @@ import com.example.newserial.domain.news.config.ChatGptConfig;
 import com.example.newserial.domain.news.dto.ChatGptMessage;
 import com.example.newserial.domain.news.dto.ChatGptRequestDto;
 import com.example.newserial.domain.news.dto.ChatGptResponseDto;
+import com.example.newserial.domain.pet.repository.Pet;
+import com.example.newserial.domain.pet.repository.PetRepository;
+import com.example.newserial.domain.quiz.dto.MainQuizNewsResponseDto;
 import com.example.newserial.domain.quiz.dto.NewsQuizAttemptRequestDto;
 import com.example.newserial.domain.quiz.dto.NewsQuizAttemptResponseDto;
 import com.example.newserial.domain.quiz.dto.NewsQuizResponseDto;
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
-import com.example.newserial.domain.quiz.repository.NewsQuiz;
-import com.example.newserial.domain.quiz.repository.NewsQuizAttempt;
-import com.example.newserial.domain.quiz.repository.NewsQuizAttemptRepository;
-import com.example.newserial.domain.quiz.repository.NewsQuizRepository;
+import com.example.newserial.domain.quiz.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,12 +43,18 @@ public class QuizService {
     private final NewsRepository newsRepository;
     private final NewsQuizRepository newsQuizRepository;
     private final NewsQuizAttemptRepository newsQuizAttemptRepository;
+    private final OxQuizAttemptRepository oxQuizAttemptRepository;
+    private final PetRepository petRepository;
 
     @Autowired
-    public QuizService(NewsRepository newsRepository, NewsQuizRepository newsQuizRepository, NewsQuizAttemptRepository newsQuizAttemptRepository){
+    public QuizService(NewsRepository newsRepository, NewsQuizRepository newsQuizRepository,
+                       NewsQuizAttemptRepository newsQuizAttemptRepository, OxQuizAttemptRepository oxQuizAttemptRepository,
+                       PetRepository petRepository){
         this.newsRepository=newsRepository;
         this.newsQuizRepository=newsQuizRepository;
         this.newsQuizAttemptRepository=newsQuizAttemptRepository;
+        this.oxQuizAttemptRepository=oxQuizAttemptRepository;
+        this.petRepository=petRepository;
     }
 
 
@@ -77,7 +83,8 @@ public class QuizService {
         if (newsQuizAttemptRepository.existsByMember(member)) { //유저가 이미 퀴즈를 푼 경우
             if (newsQuizRepository.existsByNews(news)) {
                 NewsQuiz newsQuiz = newsQuizRepository.findByNews(news).get();
-                NewsQuizAttempt newsQuizAttempt = newsQuizAttemptRepository.findByMember(member).get();
+                List<NewsQuizAttempt> newsQuizAttemptList = newsQuizAttemptRepository.findByMember(member);
+                NewsQuizAttempt newsQuizAttempt=newsQuizAttemptList.get(0);
                 String question = newsQuiz.getNews_question();
                 String userAnswer = newsQuizAttempt.getNews_submitted(); //사용자 정답
                 String qAnswer = newsQuiz.getNews_answer(); //뉴스 정답
@@ -179,6 +186,9 @@ public class QuizService {
         String qAnswer=newsQuiz.getNews_answer(); //뉴스 정답
         String explanation= newsQuiz.getNews_explanation();
 
+        Pet pet=petRepository.findByMember(member).get();
+        int petScore=pet.getScore();
+
         if (userAnswer.equals(qAnswer)){ //사용자 정답이 맞는 경우: 2점
             NewsQuizAttempt newsQuizAttempt=NewsQuizAttempt.builder()
                     .member(member)
@@ -188,6 +198,8 @@ public class QuizService {
                     .build();
 
             newsQuizAttemptRepository.save(newsQuizAttempt);
+
+            petScore+=2;
 
             NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto(question, userAnswer,qAnswer,"맞았습니다", explanation);
             return newsQuizAttemptResponseDto;
@@ -202,9 +214,21 @@ public class QuizService {
 
             newsQuizAttemptRepository.save(newsQuizAttempt);
 
+            petScore+=1;
+
             NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto(question, userAnswer,qAnswer,"틀렸습니다", explanation);
             return newsQuizAttemptResponseDto;
         }
     }
 
+//    //메인: 유저별 한입퀴즈 맞춤 기사
+//    public MainQuizNewsResponseDto getQuizNews(Member member){
+//        List<OxQuizAttempt> userAttemptList=oxQuizAttemptRepository.findByMember(member);
+//        for (OxQuizAttempt oxQuizAttempt : userAttemptList){
+//            if (oxQuizAttempt.getOxScore()==2){
+//                userAttemptList.remove(oxQuizAttempt);
+//            }
+//        }
+//        //뽑아오는걸 랜덤으로 할지 아니면 제일 최근에 틀린걸로 할지??
+//    }
 }

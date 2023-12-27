@@ -5,11 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface NewsQuizAttemptRepository extends JpaRepository<NewsQuizAttempt, NewsQuizAttemptId> {
-
-    boolean existsByMember(Member member);
-    List<NewsQuizAttempt> findByMember(Member member);
+public interface OxQuizAttemptRepository extends JpaRepository<OxQuizAttempt, OxQuizAttemptId> {
+    List<OxQuizAttempt> findByMember(Member member);
 }
