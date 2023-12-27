@@ -11,10 +11,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="ox_quiz_attempt")
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(OxQuizAttemptId.class)
