@@ -74,4 +74,10 @@ public class AuthService {
         member.setPassword(passwordEncoder.encode(newPassword));
     }
 
+    public void comparePasswords(String newPassword, String passwordCheck) {
+        if (!newPassword.equals(passwordCheck)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+        }
+    }
+
 }
