@@ -14,6 +14,6 @@ import java.util.Objects;
 public class OxQuizAttemptId implements Serializable {
     //     * PK: {member_id(FK)    bigint | OX_quiz_id(FK)    bigint}
     private Member member;
-    private OxQuiz oxQuiz;
+    private Words words;
 
 }

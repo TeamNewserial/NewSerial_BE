@@ -2,15 +2,9 @@ package com.example.newserial.domain.quiz.repository;
 
 import com.example.newserial.domain.BaseTimeEntity;
 import com.example.newserial.domain.member.repository.Member;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Table(name="ox_quiz_attempt")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @IdClass(OxQuizAttemptId.class)
 public class OxQuizAttempt extends BaseTimeEntity {
     /**
@@ -29,17 +22,25 @@ public class OxQuizAttempt extends BaseTimeEntity {
      */
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;
 
     @Id
-    @OneToOne
-    @JoinColumn(name = "ox_quiz_id")
-    private OxQuiz oxQuiz;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "words_id")
+    private Words words;
 
     private int oxScore;
 
-    @Column(length = 1)
+    @Column(columnDefinition = "TEXT")
     private String oxSubmitted;
+
+    @Builder
+    public OxQuizAttempt(Member member, Words words, int oxScore, String oxSubmitted) {
+        this.member = member;
+        this.words = words;
+        this.oxScore = oxScore;
+        this.oxSubmitted = oxSubmitted;
+    }
 }

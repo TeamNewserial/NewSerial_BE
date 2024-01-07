@@ -6,6 +6,7 @@ import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.news.service.NewsService;
 import com.example.newserial.domain.quiz.dto.NewsQuizAttemptRequestDto;
 import com.example.newserial.domain.quiz.dto.NewsQuizAttemptResponseDto;
+import com.example.newserial.domain.quiz.dto.OxQuizAttemptRequestDto;
 import com.example.newserial.domain.quiz.service.QuizService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +48,30 @@ public class QuizController {
         try{
             Member member = authDataService.checkAccessToken(request);
             return ResponseEntity.ok(quizService.attemptNewsQuiz(member, newsQuizAttemptRequestDto));
+        } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
+            return authDataService.redirectToLogin();
+        }
+    }
+
+    //한입 퀴즈 저장 및 조회
+    @PostMapping("/main-quiz")
+    public ResponseEntity<?> getOXQuiz(HttpServletRequest request){
+        try {
+            Member member = authDataService.checkAccessToken(request);
+            return quizService.getOXQuiz(member);
+        } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
+            return authDataService.redirectToLogin();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //한입 퀴즈 정답 제출
+    @PostMapping("/main-quiz/answer")
+    public ResponseEntity<?> attemptOXQuiz(@RequestBody OxQuizAttemptRequestDto oxQuizAttemptRequestDto, HttpServletRequest request){
+        try{
+            Member member = authDataService.checkAccessToken(request);
+            return ResponseEntity.ok(quizService.attemptOXQuiz(member, oxQuizAttemptRequestDto));
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }
