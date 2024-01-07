@@ -55,4 +55,7 @@ public class Member {
     @PrimaryKeyJoinColumn
     private Pet pet;
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
