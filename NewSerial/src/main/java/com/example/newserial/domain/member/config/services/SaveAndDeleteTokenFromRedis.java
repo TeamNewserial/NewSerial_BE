@@ -2,6 +2,7 @@ package com.example.newserial.domain.member.config.services;
 
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.config.redis.RedisService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,14 @@ public class SaveAndDeleteTokenFromRedis implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         //클라이언트는 request의 authorization header에 accessToken 넣어서 요청
         String accessToken = request.getHeader("Authorization");
-        String email = jwtUtils.getEmailFromJwtToken(accessToken);
-        //레디스에서 refreshToken 삭제
-        redisService.delete(email);
-        //accessToken 등록
-        redisService.setBlackList(accessToken, "accessToken", jwtUtils.getRemainTimeMillis(accessToken));
+        try {
+            String email = jwtUtils.getEmailFromJwtToken(accessToken);
+            //레디스에서 refreshToken 삭제
+            redisService.delete(email);
+            //accessToken 등록
+            redisService.setBlackList(accessToken, "accessToken", jwtUtils.getRemainTimeMillis(accessToken));
+        } catch (ExpiredJwtException e) {
+            return;
+        }
     }
 }

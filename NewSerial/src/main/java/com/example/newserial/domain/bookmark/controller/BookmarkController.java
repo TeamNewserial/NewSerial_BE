@@ -29,7 +29,7 @@ public class BookmarkController {
             String email = jwtUtils.getEmailFromJwtToken(authorization);
             bookmarkService.addBookmark(email, newsId);
             return ResponseEntity.ok().build();
-        } catch (BadRequestException e) {
+        } catch (Exception e) {
             return authDataService.redirectToLogin();
         }
     }
@@ -41,7 +41,7 @@ public class BookmarkController {
             String email = jwtUtils.getEmailFromJwtToken(authorization);
             bookmarkService.deleteBookmark(email, newsId);
             return ResponseEntity.ok().build();
-        } catch (BadRequestException e) {
+        } catch (Exception e) {
             return authDataService.redirectToLogin();
         }
     }
