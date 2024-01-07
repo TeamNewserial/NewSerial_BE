@@ -1,11 +1,10 @@
 package com.example.newserial.domain.quiz.repository;
 
 import com.example.newserial.domain.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.newserial.domain.news.repository.News;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,15 +22,28 @@ public class OxQuiz extends BaseTimeEntity {
      */
 
     @Id
-    @Column(name="ox_quiz_id")
-    private Long oxQuizId;
+    @Column(name="words_id")
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
     private String oxQuestion;
 
-    @Column(length = 1)
+    @Column(columnDefinition = "TEXT")
     private String oxAnswer;
 
     @Column(columnDefinition = "TEXT")
     private String oxExplanation;
+
+    @Builder
+    public OxQuiz(Words words, String oxQuestion, String oxAnswer, String oxExplanation) {
+        this.words = words;
+        this.oxQuestion = oxQuestion;
+        this.oxAnswer = oxAnswer;
+        this.oxExplanation = oxExplanation;
+    }
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name="words_id")
+    private Words words;
 }

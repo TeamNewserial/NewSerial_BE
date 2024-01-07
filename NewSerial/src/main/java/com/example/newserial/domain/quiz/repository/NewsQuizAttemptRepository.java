@@ -1,6 +1,7 @@
 package com.example.newserial.domain.quiz.repository;
 
 import com.example.newserial.domain.member.repository.Member;
+import com.example.newserial.domain.news.repository.News;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,5 @@ public interface NewsQuizAttemptRepository extends JpaRepository<NewsQuizAttempt
 
     boolean existsByMember(Member member);
     List<NewsQuizAttempt> findByMember(Member member);
+    Optional<NewsQuizAttempt> findByMemberAndNews(Member member, News news);
 }

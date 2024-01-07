@@ -92,7 +92,7 @@ public class MyPageService {
 
         if (!oxQuizAttemptList.isEmpty()){
             for(OxQuizAttempt oxQuizAttempt : oxQuizAttemptList){
-                OxQuiz oxQuiz=oxQuizAttempt.getOxQuiz();
+                OxQuiz oxQuiz=oxQuizRepository.findByWords(oxQuizAttempt.getWords()).get();
                 String quizQuestion=oxQuiz.getOxQuestion();
                 String quizAnswer=oxQuiz.getOxAnswer();
                 String userAnswer=oxQuizAttempt.getOxSubmitted();

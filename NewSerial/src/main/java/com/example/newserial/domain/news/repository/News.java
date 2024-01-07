@@ -42,14 +42,4 @@ public class News {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "news")
     @PrimaryKeyJoinColumn
     private NewsQuiz newsQuiz;
-
-//    @OneToOne(mappedBy="news")
-//    private Bookmark bookmark;
-
-
-//    @OneToOne(mappedBy = "news")
-//    private News_quiz_attempt news_quiz_attempt;
-
-//    @OneToMany(mappedBy = "news") //cascade = CascadeType.REMOVE ?
-//    private List<Memo> memos; //이게 맞나
 }
