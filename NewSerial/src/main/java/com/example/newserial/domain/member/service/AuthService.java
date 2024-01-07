@@ -1,5 +1,7 @@
 package com.example.newserial.domain.member.service;
 
+import com.example.newserial.domain.error.BadRequestException;
+import com.example.newserial.domain.error.ErrorCode;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.config.jwt.TokenCarrier;
 import com.example.newserial.domain.member.config.oauth2.CustomOAuth2User;
@@ -16,7 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -54,11 +58,20 @@ public class AuthService {
         return memberRepository.existsByEmail(request.getEmail());
     }
 
+    public boolean doesEmailExists(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
     public void makeAccount(SignupRequestDto request) {
         Member member = new Member(request.getEmail(),
                 passwordEncoder.encode(request.getPassword()));
 
         memberRepository.save(member);
+    }
+
+    public void changePassword(String email, String newPassword) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("해당하는 회원이 없습니다", ErrorCode.BAD_REQUEST));
+        member.setPassword(passwordEncoder.encode(newPassword));
     }
 
 }
