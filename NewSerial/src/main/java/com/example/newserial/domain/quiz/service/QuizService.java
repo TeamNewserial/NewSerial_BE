@@ -245,88 +245,87 @@ public class QuizService {
     @Transactional
     public ResponseEntity<?> getOXQuiz(Member member) throws JsonProcessingException {
 
-        int randomVal=(int)(Math.random()*(715)-1)+1; //1~714
+        int randomVal = (int) (Math.random() * (715) - 1) + 1; //1~714
 
-        Words words=wordsRepository.findById((long) randomVal).get();
+        Words words = wordsRepository.findById((long) randomVal).get();
 
-        if (oxQuizAttemptRepository.existsByMember(member)) { //유저가 이미 퀴즈를 푼 경우
-            if (oxQuizRepository.existsByWords(words)) { //유저가 풀었으므로 당연히 db에 저장돼있는 퀴즈일 것
-                OxQuiz oxQuiz = oxQuizRepository.findByWords(words).get();
-                OxQuizAttempt oxQuizAttempt=oxQuizAttemptRepository.findByMemberAndWords(member, words).get();
-                String question = oxQuiz.getOxQuestion();
-                String userAnswer = oxQuizAttempt.getOxSubmitted(); //사용자 정답
-                String qAnswer = oxQuiz.getOxAnswer(); //뉴스 정답
-                String result = (userAnswer.equals(qAnswer)) ? "맞았습니다" : "틀렸습니다";
-                String explanation = oxQuiz.getOxExplanation();
+        String word = words.getWord();
+        WebClient client = WebClient.builder()
+                .baseUrl(ChatGptConfig.CHAT_URL)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //defaultHeader: 모든 요청에 사용할 헤더
+                .defaultHeader(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey)
+                .build();
 
-                OxQuizAttemptResponseDto oxQuizAttemptResponseDto = new OxQuizAttemptResponseDto(words.getId(), question, userAnswer, qAnswer, result, explanation);
+        String prompt = word + "\n" +
+                "위 경제용어의 정의와 관련된 O/X 퀴즈를 만들어 '퀴즈:' 다음에 적어주세요. 예를 들어, '물가 상승률은 물가가 얼마나 상승했는지 나타내는 지표이다.' 이런 식으로 작성해주세요.\n" +
+                "다음 줄에 그 퀴즈의 답이 O와 X 중 무엇인지 '답:' 다음에 적어주세요.\n" +
+                "다음 줄에 그 퀴즈의 답에 대한 설명을 '설명:' 다음에 적어주세요.\n";
 
-                return ResponseEntity.ok(oxQuizAttemptResponseDto);
-            }
-        } else { //유저가 아직 퀴즈를 풀지 않은 경우
-            if (oxQuizRepository.existsByWords(words)) { //뉴스에 대한 퀴즈가 이미 db에 저장돼있는 경우 db에서 가져와 반환
-                OxQuiz oxQuiz = oxQuizRepository.findByWords(words).get();
-                String question = oxQuiz.getOxQuestion();
-                OxQuizResponseDto oxQuizResponseDto = new OxQuizResponseDto(words.getId(), question);
-                return ResponseEntity.ok(oxQuizResponseDto);
-            } else { //뉴스에 대한 퀴즈가 db에 없는 경우 챗gpt에 요청을 보내고 새로 저장 후 반환
-                String word = words.getWord();
-                WebClient client = WebClient.builder()
-                        .baseUrl(ChatGptConfig.CHAT_URL)
-                        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //defaultHeader: 모든 요청에 사용할 헤더
-                        .defaultHeader(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey)
-                        .build();
+        List<ChatGptMessage> messages = new ArrayList<>();
+        messages.add(ChatGptMessage.builder()
+                .role(ChatGptConfig.ROLE)
+                .content(prompt)
+                .build());
+        ChatGptRequestDto chatGptRequest = new ChatGptRequestDto(
+                ChatGptConfig.CHAT_MODEL,
+                ChatGptConfig.MAX_TOKEN,
+                ChatGptConfig.TEMPERATURE,
+                ChatGptConfig.STREAM,
+                messages
+        );
+        String requestValue = objectMapper.writeValueAsString(chatGptRequest);
 
-                String prompt = word + "\n" +
-                        "위 경제용어의 정의와 관련된 O/X 퀴즈를 만들어 '퀴즈:' 다음에 적어주세요. 예를 들어, '물가 상승률은 물가가 얼마나 상승했는지 나타내는 지표이다.' 이런 식으로 작성해주세요.\n" +
-                        "다음 줄에 그 퀴즈의 답이 O와 X 중 무엇인지 '답:' 다음에 적어주세요.\n" +
-                        "다음 줄에 그 퀴즈의 답에 대한 설명을 '설명:' 다음에 적어주세요.\n";
+        Mono<ChatGptResponseDto> responseMono = client.post() //HTTP POST 요청 생성
+                .bodyValue(requestValue) //POST 요청의 본문(body) 설정, ChatGpt 서비스로 전송할 데이터
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(ChatGptResponseDto.class); // ChatGptResponseDto로 받기
 
-                List<ChatGptMessage> messages = new ArrayList<>();
-                messages.add(ChatGptMessage.builder()
-                        .role(ChatGptConfig.ROLE)
-                        .content(prompt)
-                        .build());
-                ChatGptRequestDto chatGptRequest = new ChatGptRequestDto(
-                        ChatGptConfig.CHAT_MODEL,
-                        ChatGptConfig.MAX_TOKEN,
-                        ChatGptConfig.TEMPERATURE,
-                        ChatGptConfig.STREAM,
-                        messages
-                );
-                String requestValue = objectMapper.writeValueAsString(chatGptRequest);
-
-                Mono<ChatGptResponseDto> responseMono = client.post() //HTTP POST 요청 생성
-                        .bodyValue(requestValue) //POST 요청의 본문(body) 설정, ChatGpt 서비스로 전송할 데이터
-                        .accept(MediaType.APPLICATION_JSON)
-                        .retrieve()
-                        .bodyToMono(ChatGptResponseDto.class); // ChatGptResponseDto로 받기
-
-                ChatGptResponseDto chatGptResponseDto = responseMono.block();
-                String content = getContentFromResponse(chatGptResponseDto);
+        ChatGptResponseDto chatGptResponseDto = responseMono.block();
+        String content = getContentFromResponse(chatGptResponseDto);
 
 //        System.out.println("content = " + content);
 
-                String quiz = extractContent(content, "퀴즈", "\\n");
-                String answer = extractContent(content, "답", "\\n");
-                String explanation = extractContent(content, "설명", null);
+        String quiz = extractContent(content, "퀴즈", "\\n");
+        String answer = extractContent(content, "답", "\\n");
+        String explanation = extractContent(content, "설명", null);
 
-                OxQuiz oxQuiz=OxQuiz.builder()
-                        .words(words)
-                        .oxQuestion(quiz)
-                        .oxAnswer(answer)
-                        .oxExplanation(explanation)
-                        .build();
+        OxQuiz oxQuiz = OxQuiz.builder()
+                .words(words)
+                .oxQuestion(quiz)
+                .oxAnswer(answer)
+                .oxExplanation(explanation)
+                .build();
 
-                oxQuizRepository.save(oxQuiz);
+        oxQuizRepository.save(oxQuiz);
 
-                OxQuizResponseDto oxQuizResponseDto = new OxQuizResponseDto(words.getId(), quiz);
+        OxQuizResponseDto oxQuizResponseDto = new OxQuizResponseDto(words.getId(), quiz);
 
-                return ResponseEntity.ok(oxQuizResponseDto);
-            }
-        }
-        return null;
+        return ResponseEntity.ok(oxQuizResponseDto);
     }
+
+//        if (oxQuizAttemptRepository.existsByMember(member)) { //유저가 이미 퀴즈를 푼 경우
+//            if (oxQuizRepository.existsByWords(words)) { //유저가 풀었으므로 당연히 db에 저장돼있는 퀴즈일 것
+//                OxQuiz oxQuiz = oxQuizRepository.findByWords(words).get();
+//                OxQuizAttempt oxQuizAttempt=oxQuizAttemptRepository.findByMemberAndWords(member, words).get();
+//                String question = oxQuiz.getOxQuestion();
+//                String userAnswer = oxQuizAttempt.getOxSubmitted(); //사용자 정답
+//                String qAnswer = oxQuiz.getOxAnswer(); //뉴스 정답
+//                String result = (userAnswer.equals(qAnswer)) ? "맞았습니다" : "틀렸습니다";
+//                String explanation = oxQuiz.getOxExplanation();
+//
+//                OxQuizAttemptResponseDto oxQuizAttemptResponseDto = new OxQuizAttemptResponseDto(words.getId(), question, userAnswer, qAnswer, result, explanation);
+//
+//                return ResponseEntity.ok(oxQuizAttemptResponseDto);
+//            }
+//        } else { //유저가 아직 퀴즈를 풀지 않은 경우
+//            if (oxQuizRepository.existsByWords(words)) { //뉴스에 대한 퀴즈가 이미 db에 저장돼있는 경우 db에서 가져와 반환
+//                OxQuiz oxQuiz = oxQuizRepository.findByWords(words).get();
+//                String question = oxQuiz.getOxQuestion();
+//                OxQuizResponseDto oxQuizResponseDto = new OxQuizResponseDto(words.getId(), question);
+//                return ResponseEntity.ok(oxQuizResponseDto);
+//            } else { //뉴스에 대한 퀴즈가 db에 없는 경우 챗gpt에 요청을 보내고 새로 저장 후 반환
+
 
     //메인: 한입 퀴즈 푸는 메소드
     @Transactional
