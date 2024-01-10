@@ -12,6 +12,7 @@ import com.example.newserial.domain.member.repository.MemberRepository;
 import com.example.newserial.domain.member.repository.SocialMember;
 import com.example.newserial.domain.member.repository.SocialMemberRepository;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -98,6 +99,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Member member = attributes.makeMember(attributes.getOauth2UserInfo());
         SocialMember socialMember = attributes.makeSocialMember(socialType, member);
         socialMemberRepository.save(socialMember);
+        //member 테이블에 이메일 겹치는 객체 있으면 제거
+        String email = member.getEmail();
+        Optional<Member> duplicatedMember = memberRepository.findByEmail(email);
+        if (duplicatedMember.isPresent()) {
+            memberRepository.delete(duplicatedMember.get());
+        }
         return memberRepository.save(member);
     }
 }
