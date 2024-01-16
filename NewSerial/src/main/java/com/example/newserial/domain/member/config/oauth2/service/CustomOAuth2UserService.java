@@ -11,6 +11,7 @@ import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.repository.MemberRepository;
 import com.example.newserial.domain.member.repository.SocialMember;
 import com.example.newserial.domain.member.repository.SocialMemberRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +23,19 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 //OAuth2UserService 커스텀
 //OAuth2 로그인 로직 담당
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
     private final SocialMemberRepository socialMemberRepository;
+    private final EntityManager entityManager;
 
     private static final String NAVER = "naver";
 
@@ -97,14 +101,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private Member register(OAuthAttributesDto attributes, SocialType socialType) {
         Member member = attributes.makeMember(attributes.getOauth2UserInfo());
-        SocialMember socialMember = attributes.makeSocialMember(socialType, member);
-        socialMemberRepository.save(socialMember);
-        //member 테이블에 이메일 겹치는 객체 있으면 제거
         String email = member.getEmail();
         Optional<Member> duplicatedMember = memberRepository.findByEmail(email);
         if (duplicatedMember.isPresent()) {
-            memberRepository.delete(duplicatedMember.get());
+            member = duplicatedMember.get();
         }
-        return memberRepository.save(member);
+        //영속성 컨텍스트에 등록
+        entityManager.persist(member);
+        SocialMember socialMember = attributes.makeSocialMember(socialType, member);
+        //member가 이미 db에 존재하기 때문에 오류생긴다 (엔티티 종속성 문제 발생..) 어떻게 해야할까..
+        socialMemberRepository.save(socialMember);
+        return member;
     }
 }
