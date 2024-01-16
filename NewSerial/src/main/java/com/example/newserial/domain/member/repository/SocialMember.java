@@ -37,4 +37,12 @@ public class SocialMember {
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType; //NAVER, (나중에 확장시 추가됨. kakao, google 등)
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }
