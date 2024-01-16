@@ -12,4 +12,5 @@ public interface OxQuizAttemptRepository extends JpaRepository<OxQuizAttempt, Ox
     boolean existsByMember(Member member);
     List<OxQuizAttempt> findByMember(Member member);
     Optional<OxQuizAttempt> findByMemberAndWords(Member member, Words words);
+    boolean existsByMemberAndWords(Member member, Words words);
 }

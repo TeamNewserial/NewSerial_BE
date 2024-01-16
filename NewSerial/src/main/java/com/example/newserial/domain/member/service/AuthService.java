@@ -10,6 +10,10 @@ import com.example.newserial.domain.member.dto.request.LoginRequestDto;
 import com.example.newserial.domain.member.dto.request.SignupRequestDto;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.repository.MemberRepository;
+import com.example.newserial.domain.pet.repository.Pet;
+import com.example.newserial.domain.pet.repository.PetCondition;
+import com.example.newserial.domain.pet.repository.PetConditionRepository;
+import com.example.newserial.domain.pet.repository.PetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +31,8 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
+    private final PetRepository petRepository;
+    private final PetConditionRepository petConditionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
@@ -67,6 +73,11 @@ public class AuthService {
                 passwordEncoder.encode(request.getPassword()));
 
         memberRepository.save(member);
+
+        //펫 엔티티 추가
+        PetCondition petCondition=petConditionRepository.findById(1L).get();
+        Pet pet=new Pet(petCondition,0,null,member);
+        petRepository.save(pet);
     }
 
     public void changePassword(String email, String newPassword) {

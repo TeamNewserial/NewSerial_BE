@@ -37,6 +37,13 @@ public class Pet {
     @JoinColumn(name="member_id")
     private Member member;
 
+    public Pet(PetCondition petCondition, int score, String petImage, Member member) {
+        this.petCondition = petCondition;
+        this.score = score;
+        this.petImage = petImage;
+        this.member = member;
+    }
+
     public void updateScore(int score){
         this.score+=score;
     }
