@@ -3,6 +3,7 @@ package com.example.newserial.domain.bookmark.controller;
 import com.example.newserial.domain.bookmark.service.BookmarkService;
 import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
+import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,8 @@ public class BookmarkController {
     public ResponseEntity<?> add(HttpServletRequest request, @PathVariable long newsId) {
         try {
             String authorization = request.getHeader("Authorization");
-            String email = jwtUtils.getEmailFromJwtToken(authorization);
+            Member member = authDataService.checkAccessToken(request);
+            String email = member.getEmail();
             bookmarkService.addBookmark(email, newsId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -38,7 +40,8 @@ public class BookmarkController {
     public ResponseEntity<?> delete(HttpServletRequest request, @PathVariable long newsId) {
         try {
             String authorization = request.getHeader("Authorization");
-            String email = jwtUtils.getEmailFromJwtToken(authorization);
+            Member member = authDataService.checkAccessToken(request);
+            String email = member.getEmail();
             bookmarkService.deleteBookmark(email, newsId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
