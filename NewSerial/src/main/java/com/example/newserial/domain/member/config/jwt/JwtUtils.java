@@ -57,6 +57,7 @@ public class JwtUtils {
     //authentication 헤더에서 토큰 꺼내기
     public String getAccessTokenFromAuthorization(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
+        if (token == null) return "no token";
         return removeBearer(token);
     }
 
