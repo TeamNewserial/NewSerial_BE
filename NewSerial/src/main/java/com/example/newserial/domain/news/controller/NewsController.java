@@ -52,13 +52,6 @@ public class NewsController {
         }
     }
 
-//
-//    //날짜별 뉴스 리스트 조회 기능
-//    @GetMapping("/last-news/{date}") //받을때 시간은 00:00:00이나 12:59:59 이런식으로 고정해두고 받을 수 있도록 해야 함
-//    public TotalNewsListResponseDto dateNews(@PathVariable("date") Timestamp targetDate, @PageableDefault(size=3) Pageable pageable){
-//        return newsService.dateNews(targetDate, pageable);
-//    }
-
     //뉴스 상세페이지 조회 기능
     @GetMapping("/short-news/{id}")
     public ResponseEntity<?> shortNews(@PathVariable("id") Long id, HttpServletRequest request){
@@ -70,6 +63,14 @@ public class NewsController {
         }
     }
 
-
-
+    //한입퀴즈 맞춤기사 기능
+    @GetMapping("/main-quiz/news")
+    public ResponseEntity<?> shortNews(HttpServletRequest request){
+        try {
+            Member member = authDataService.checkAccessToken(request);
+            return ResponseEntity.ok(newsService.mainQuizNews(member));
+        } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
+            return authDataService.redirectToLogin();
+        }
+    }
 }

@@ -1,9 +1,16 @@
 package com.example.newserial.domain.news.service;
 
+import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.news.config.ChatGptConfig;
 import com.example.newserial.domain.news.dto.*;
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.news.repository.NewsRepository;
+import com.example.newserial.domain.quiz.repository.OxQuizAttempt;
+import com.example.newserial.domain.quiz.repository.OxQuizAttemptRepository;
+import com.example.newserial.domain.quiz.repository.Words;
+import com.example.newserial.domain.quiz.repository.WordsRepository;
+import com.example.newserial.domain.search.dto.SearchResponseDto;
+import com.example.newserial.domain.search.service.SearchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +20,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -29,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,15 +47,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional(readOnly = true)
 @Service
+@RequiredArgsConstructor
 public class NewsService {
     private final RestTemplate restTemplate;
     private final NewsRepository newsRepository;
-
-    @Autowired
-    public NewsService(RestTemplate restTemplate, NewsRepository newsRepository){
-        this.restTemplate=restTemplate;
-        this.newsRepository=newsRepository;
-    }
+    private final OxQuizAttemptRepository oxQuizAttemptRepository;
+    private final WordsRepository wordsRepository;
+    private final SearchService searchService;
 
     //api key는 application.properties에 넣어둠.
     @Value("${api-key.chat-gpt}")
@@ -97,64 +106,11 @@ public class NewsService {
         return jsonNode.at("/choices/0/message/content").asText();
     }
 
-//    //날짜별 뉴스 리스트 조회 기능 // 데이터 크롤링 후 사진, 신문사 추가 필요
-//    public TotalNewsListResponseDto dateNews(Timestamp targetDate, Pageable pageable){
-//        List<NewsListResponseDto> newsDtoList=new ArrayList<>();
-////        newsList=newsRepository.findAllByDate(targetDate).stream()
-////                .map(news-> new NewsListResponseDto(news))
-////                .collect(Collectors.toList()); //해당 날짜에 크롤링된 뉴스 리스트 생성
-//
-//        List<News> newsList=newsRepository.findAllByDate(targetDate);
-//
-//        for(News news:newsList){
-//            Timestamp date=news.getDate();
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00");
-//            String newsDate=sdf.format(date);
-//            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getTitle(),
-//                    news.getCategory().getName(), newsDate);
-//            newsDtoList.add(newsListResponseDto);
-//        }
-//
-//        //페이징
-//        List<NewsListResponseDto> pagingNews=new ArrayList<>();
-//
-//        int startIndex = (int) pageable.getOffset();
-//        int endIndex = Math.min(startIndex + pageable.getPageSize(), newsDtoList.size());
-//
-//        List<NewsListResponseDto> paginatednews=new ArrayList<>(newsDtoList).subList(startIndex, endIndex);
-//
-//        for(NewsListResponseDto news:paginatednews){
-//            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getTitle(), news.getCategory_name(), news.getDate());
-//            pagingNews.add(newsListResponseDto);
-//        }
-//
-//        TotalNewsListResponseDto responseDto=new TotalNewsListResponseDto(newsDtoList.size(), pagingNews);
-//        return responseDto;
-//    }
-
     //뉴스 상세페이지 조회 기능
     @Transactional
     public TodayNewsDto shortNews(Long id) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 뉴스가 없습니다."));
-
-//        if (!viewRepository.findByNews(news).isPresent()) {
-//            // 해당 newsId를 가진 View 엔티티가 없으면 새로 생성하여 저장
-//            View view=View.builder()
-//                    .news(news)
-//                    .count(1L)
-//                    .build();
-//
-//            viewRepository.save(view);
-//
-//        } else {
-//            // 이미 해당 newsId를 가진 View 엔티티가 있으면 조회수 증가
-//            viewRepository.updateViews(id);
-//        }
-
-//        Timestamp date=news.getDate();
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00");
-//        String newsDate=sdf.format(date);
 
         String newsTitle=news.getTitle();
         newsTitle=newsTitle.replace("\n", "");
@@ -167,5 +123,39 @@ public class NewsService {
         TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), newsTitle, newsBodyList, news.getCategory().getName(), news.getUrl());
 
         return todayNewsDto;
+    }
+
+    //한입퀴즈 맞춤 기사 조회
+    public MainQuizNewsDto mainQuizNews(Member member){
+        if (oxQuizAttemptRepository.existsByMember(member)) { //유저가 ox 퀴즈를 푼 기록이 있는 경우
+            List<OxQuizAttempt> oxQuizAttempts = oxQuizAttemptRepository.findByMember(member);
+            if (!oxQuizAttempts.isEmpty()){ //퀴즈 기록이 비어있지 않다면 진행
+                Random random = new Random();
+                OxQuizAttempt oxQuizAttempt = oxQuizAttempts.get(new Random().nextInt(oxQuizAttempts.size())); //푼 퀴즈 중 랜덤으로 1개 추출
+                String word= String.valueOf(oxQuizAttempt.getWords()); //단어 추출
+                return getMainQuizNews(word);
+            }
+            else{
+                return null;
+            }
+        }
+        else{ //유저가 ox 퀴즈를 푼 기록이 없는 경우
+            int randomVal = (int) (Math.random() * (715) - 1) + 1; //용어 중 랜덤으로 1개 추출
+            Words words=wordsRepository.findById(Long.valueOf(randomVal)).get();
+            String word=words.getWord();
+            return getMainQuizNews(word);
+        }
+    }
+
+    //단어 검색 결과 중 기사를 1개 뽑아 MainQuizNewsDto 반환: 중복 코드라 메소드로 뽑음음
+   private MainQuizNewsDto getMainQuizNews(String word) {
+        Pageable pageable = PageRequest.of(0, 1, Sort.by("date").descending());
+        Page<SearchResponseDto> searchResponseDtos = searchService.search(word, pageable);
+        if (searchResponseDtos != null && searchResponseDtos.hasContent() && !searchResponseDtos.getContent().isEmpty()) { //검색 결과가 있을 때 진행
+            SearchResponseDto searchResponseDto = searchResponseDtos.getContent().get(0);
+            return new MainQuizNewsDto(searchResponseDto.getId(), searchResponseDto.getTitle()); //뉴스기사 id값과 제목만 담음
+        } else {
+            return null;
+        }
     }
 }
