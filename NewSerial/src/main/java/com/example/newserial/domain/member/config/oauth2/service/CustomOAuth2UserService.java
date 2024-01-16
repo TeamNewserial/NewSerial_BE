@@ -11,6 +11,10 @@ import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.repository.MemberRepository;
 import com.example.newserial.domain.member.repository.SocialMember;
 import com.example.newserial.domain.member.repository.SocialMemberRepository;
+import com.example.newserial.domain.pet.repository.Pet;
+import com.example.newserial.domain.pet.repository.PetCondition;
+import com.example.newserial.domain.pet.repository.PetConditionRepository;
+import com.example.newserial.domain.pet.repository.PetRepository;
 import jakarta.persistence.EntityManager;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +39,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final MemberRepository memberRepository;
     private final SocialMemberRepository socialMemberRepository;
+    private final PetRepository petRepository;
+    private final PetConditionRepository petConditionRepository;
     private final EntityManager entityManager;
 
     private static final String NAVER = "naver";
@@ -111,6 +117,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         SocialMember socialMember = attributes.makeSocialMember(socialType, member);
         //member가 이미 db에 존재하기 때문에 오류생긴다 (엔티티 종속성 문제 발생..) 어떻게 해야할까..
         socialMemberRepository.save(socialMember);
+
+        //펫 엔티티 추가
+        PetCondition petCondition=petConditionRepository.findById(1L).get();
+        Pet pet=new Pet(petCondition,0,null,member);
+        petRepository.save(pet);
+
         return member;
     }
 }
