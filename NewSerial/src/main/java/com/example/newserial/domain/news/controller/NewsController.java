@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.Locale;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", allowedHeaders = "Authorization")
 @RestController
 public class NewsController {
 
