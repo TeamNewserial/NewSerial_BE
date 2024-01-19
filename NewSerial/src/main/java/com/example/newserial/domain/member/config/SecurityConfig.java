@@ -88,7 +88,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-//                .cors(withDefaults())
+                .cors(httpSecurityCorsConfigurer -> corsConfigurationSource())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session ->
                         session
