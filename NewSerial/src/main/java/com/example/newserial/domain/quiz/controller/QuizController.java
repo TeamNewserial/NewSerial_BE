@@ -3,15 +3,22 @@ package com.example.newserial.domain.quiz.controller;
 import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
+import com.example.newserial.domain.news.service.NewsService;
 import com.example.newserial.domain.quiz.dto.NewsQuizAttemptRequestDto;
+import com.example.newserial.domain.quiz.dto.NewsQuizAttemptResponseDto;
 import com.example.newserial.domain.quiz.dto.OxQuizAttemptRequestDto;
 import com.example.newserial.domain.quiz.service.QuizService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", allowedHeaders = "Authorization")
 @RestController
 public class QuizController {
 
