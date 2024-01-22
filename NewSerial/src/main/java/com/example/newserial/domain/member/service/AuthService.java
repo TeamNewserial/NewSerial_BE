@@ -76,7 +76,9 @@ public class AuthService {
 
         //펫 엔티티 추가
         PetCondition petCondition=petConditionRepository.findById(1L).get();
-        Pet pet=new Pet(petCondition,0,null,member);
+        String petImage="resources/static/images/dog.png";
+        String houseImage="resources/static/images/house.png";
+        Pet pet=new Pet(petCondition,0,petImage,houseImage,member);
         petRepository.save(pet);
     }
 
