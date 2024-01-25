@@ -58,7 +58,7 @@ public class AuthDataService {
 
     //RT 검사함. 예외 던져지면 로그인 다시하라고 리다이렉트
     public String checkRefreshToken(String refreshToken) {
-        if (refreshToken.isEmpty()) throw new JwtException("refreshToken이 존재하지 않음. 로그인 필요");
+        if (refreshToken == null) throw new JwtException("refreshToken이 존재하지 않음. 로그인 필요");
         if (!jwtUtils.validateJwtToken(refreshToken)) {
             Jwt jwt = jwtUtils.getTokenClaims(refreshToken);
             throw new ExpiredJwtException(jwt.getHeader(), (Claims) jwt.getBody(), "토큰 만료됨");
@@ -70,7 +70,7 @@ public class AuthDataService {
     // 로그인으로 리다이렉션
     public ResponseEntity<?> redirectToLogin() {
         return ResponseEntity.status(HttpStatus.SEE_OTHER)
-                .header("Location", "/home")
+                .header("Location", "/")
                 .build();
     }
 
