@@ -58,7 +58,7 @@ public class NewsController {
     public ResponseEntity<?> shortNews(@PathVariable("id") Long id, HttpServletRequest request){
         try {
             Member member = authDataService.checkAccessToken(request);
-            return ResponseEntity.ok(newsService.shortNews(id));
+            return ResponseEntity.ok(newsService.shortNews(id, member));
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }

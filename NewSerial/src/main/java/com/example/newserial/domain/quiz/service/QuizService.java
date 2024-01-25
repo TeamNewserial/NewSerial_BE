@@ -314,13 +314,12 @@ public class QuizService {
             randomValues.add(randomVal);
         }
 
-        //퀴즈 만들어서 추가 -> 리스트 어디에 어떻게 추가할건지 수정,,
         Iterator<Integer> iterator = randomValues.iterator();
         List<Object> oxQuizList=new ArrayList<>();
 
         while (iterator.hasNext()) {
             long randomV = (long) iterator.next();
-            Words words = wordsRepository.findById((long) randomV).get();
+            Words words = wordsRepository.findById(randomV).get();
 
             if (oxQuizAttemptRepository.existsByMemberAndWords(member,words)) { //유저가 이미 퀴즈를 푼 경우
                     OxQuiz oxQuiz = oxQuizRepository.findByWords(words).get();

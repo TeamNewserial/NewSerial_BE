@@ -14,4 +14,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, BookmarkId> 
     List<Bookmark> findByMember(Member member);
 
     Bookmark findByMemberAndNews(Member member, News news);
+
+    boolean existsByMemberAndNews(Member member, News news);
 }
