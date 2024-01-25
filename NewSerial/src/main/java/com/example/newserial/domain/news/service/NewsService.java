@@ -1,5 +1,6 @@
 package com.example.newserial.domain.news.service;
 
+import com.example.newserial.domain.bookmark.repository.BookmarkRepository;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.news.config.ChatGptConfig;
 import com.example.newserial.domain.news.dto.*;
@@ -54,6 +55,7 @@ public class NewsService {
     private final OxQuizAttemptRepository oxQuizAttemptRepository;
     private final WordsRepository wordsRepository;
     private final SearchService searchService;
+    private final BookmarkRepository bookmarkRepository;
 
     //api key는 application.properties에 넣어둠.
     @Value("${api-key.chat-gpt}")
@@ -108,7 +110,7 @@ public class NewsService {
 
     //뉴스 상세페이지 조회 기능
     @Transactional
-    public TodayNewsDto shortNews(Long id) {
+    public TodayNewsDto shortNews(Long id, Member member) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 뉴스가 없습니다."));
 
@@ -120,7 +122,9 @@ public class NewsService {
         String[] sentences = newsbody.split("(?<=\\.)");
         List<String> newsBodyList = Arrays.asList(sentences);
 
-        TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), newsTitle, newsBodyList, news.getCategory().getName(), news.getUrl());
+        boolean bookmark=bookmarkRepository.existsByMemberAndNews(member, news);
+
+        TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), newsTitle, newsBodyList, news.getCategory().getName(), news.getUrl(), bookmark);
 
         return todayNewsDto;
     }
