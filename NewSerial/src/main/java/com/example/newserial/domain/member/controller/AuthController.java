@@ -18,6 +18,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,6 +74,12 @@ public class AuthController {
         String cookie = (String) request.getSession().getAttribute("refreshCookie");
         Long id = (Long) request.getSession().getAttribute("id");
         String email = (String) request.getSession().getAttribute("email");
+
+        //Null checks
+        if (accessToken == null || cookie == null || id == null || email == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Session attributes are missing");
+        }
 
         //세션 정보 삭제
         request.getSession().removeAttribute("accessToken");
