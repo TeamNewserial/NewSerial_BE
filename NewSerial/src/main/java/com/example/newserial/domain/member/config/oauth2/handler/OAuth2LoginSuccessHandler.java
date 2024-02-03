@@ -3,13 +3,16 @@ package com.example.newserial.domain.member.config.oauth2.handler;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.config.jwt.TokenCarrier;
 import com.example.newserial.domain.member.config.oauth2.CustomOAuth2User;
+import com.example.newserial.domain.member.dto.response.MemberResponseDto;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -30,42 +33,35 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                                         Authentication authentication) throws IOException, ServletException {
         //oAuth2User 생성 (기존 로그인 userDetail과 동일)
         log.info("oAuth2User 생성");
+        Object principal = authentication.getPrincipal();
+        log.info("principal: {}", principal);
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        Long id = oAuth2User.getId();
-        String email = oAuth2User.getEmail();
+        log.info("oAuth2User: {}", oAuth2User);
 
         //토큰 생성
-        log.info("토큰 생성");
+        log.info("access token 생성");
         TokenCarrier tokens = getTokensForResponse(oAuth2User);
-        String refreshTokenCookie = tokens.getTokenCookie().toString();
         String accessToken = tokens.getAccessToken();
+        String destinationUrl = makeRedirectUrl(accessToken);
 
-        //세션에 토큰과 쿠키 저장
-        log.info("토큰과 쿠키 저장");
-        request.getSession().setAttribute("accessToken", accessToken);
-        request.getSession().setAttribute("refreshCookie", refreshTokenCookie);
-        request.getSession().setAttribute("id", id);
-        request.getSession().setAttribute("email", email);
-
-
-
-        // /oauth2/redirect 로 이동
-        log.info("리다이렉트");
-        response.sendRedirect("/socialLogin?loginSuccess=true");
+        response.sendRedirect(destinationUrl);
     }
+
 
     public TokenCarrier getTokensForResponse(CustomOAuth2User user) {
         ResponseCookie refreshTokenCookie = jwtUtils.generateRefreshTokenCookie(user);
+        String refreshToken = jwtUtils.generateRefreshTokenFromEmail(user.getEmail());
         String accessToken = jwtUtils.generateAccessTokenFromEmail(user.getEmail());
         return TokenCarrier.builder()
                 .tokenCookie(refreshTokenCookie)
                 .accessToken(accessToken)
+                .requestToken(refreshToken)
                 .build();
     }
 
-    private String makeRedirectUrl(boolean loginSuccess) {
-        return UriComponentsBuilder.fromUriString("/socialLogin")
-                .queryParam("loginSuccess", loginSuccess)
+    private String makeRedirectUrl(String accessToken) {
+        return UriComponentsBuilder.fromUriString("/social-login-callback") //http://localhost:3000을 붙여야 하나
+                .queryParam("token", accessToken)
                 .build().toUriString();
     }
 }

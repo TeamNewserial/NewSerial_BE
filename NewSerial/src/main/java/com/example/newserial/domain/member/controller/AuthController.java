@@ -12,19 +12,16 @@ import com.example.newserial.domain.member.dto.response.MemberResponseDto;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.member.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", allowedHeaders = "Authorization")
@@ -52,45 +49,6 @@ public class AuthController {
                         userDetails.getEmail(), accessToken));
     }
 
-  
-    @GetMapping ("/socialLogin")
-    public ResponseEntity<?> oauthLoginSuccess(HttpServletRequest request, HttpServletResponse response,
-                                               @RequestParam boolean loginSuccess) {
-
-        if (!loginSuccess) {
-            log.info("리다이렉션 실행?");
-            try {
-                log.info("제발");
-                response.sendRedirect("/oauth2/authorization/naver");
-                return ResponseEntity.ok().build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        //세션에서 토큰, 쿠키 가져오기
-        log.info("세션에서 정보 가져옴");
-        String accessToken = (String) request.getSession().getAttribute("accessToken");
-        String cookie = (String) request.getSession().getAttribute("refreshCookie");
-        Long id = (Long) request.getSession().getAttribute("id");
-        String email = (String) request.getSession().getAttribute("email");
-
-        //Null checks
-        if (accessToken == null || cookie == null || id == null || email == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Session attributes are missing");
-        }
-
-        //세션 정보 삭제
-        request.getSession().removeAttribute("accessToken");
-        request.getSession().removeAttribute("refreshCookie");
-        request.getSession().removeAttribute("id");
-        request.getSession().removeAttribute("email");
-
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie)
-                .body(new MemberResponseDto(id, email, accessToken));
-    }
-
 
 
     @PostMapping("/members")
@@ -107,12 +65,22 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponseDto("회원가입이 성공적으로 완료되었습니다"));
     }
 
-    //로그아웃 후 리다이렉트
-    @GetMapping("/")
-    public ResponseEntity<?> home() {
-        return ResponseEntity.ok()
-                .body(new MessageResponseDto("home"));
+    //소셜로그인 전용 - 쿠키 발급 api
+    @GetMapping("/cookie")
+    public ResponseEntity<?> makeCookie(HttpServletRequest request) {
+        //accessToken 검사
+        authDataService.checkAccessToken(request);
+
+        //refreshToken cookie 만들기
+        String accessToken = jwtUtils.getAccessTokenFromAuthorization(request);
+        String email = jwtUtils.getEmailFromJwtToken(accessToken);
+        ResponseCookie responseCookie = jwtUtils.generateRefreshTokenCookie(email);
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .build();
     }
+
+
 
     //비밀번호 재설정
     @PostMapping("/password")
