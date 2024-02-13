@@ -2,6 +2,7 @@ package com.example.newserial.domain.member.service;
 
 import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.error.ErrorCode;
+import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.repository.MemberRepository;
@@ -32,10 +33,10 @@ public class AuthDataService {
         }
         String accesstoken = jwtUtils.getAccessTokenFromAuthorization(request);
         if (accesstoken.equals("no token")) {
-            accesstoken = remakeAccessToken(request);
+            throw new UnAuthorizedException("토큰 없음");
         }
         if (!jwtUtils.validateJwtToken(accesstoken)) { //AT 만료
-            accesstoken = remakeAccessToken(request);
+            throw new UnAuthorizedException("access token 만료");
         }
         String email = jwtUtils.getEmailFromJwtToken(accesstoken);
         return memberRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("해당 계정이 존재하지 않습니다", ErrorCode.BAD_REQUEST));

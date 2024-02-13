@@ -2,12 +2,14 @@ package com.example.newserial.domain.bookmark.controller;
 
 import com.example.newserial.domain.bookmark.service.BookmarkService;
 import com.example.newserial.domain.error.BadRequestException;
+import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +34,9 @@ public class BookmarkController {
             String email = member.getEmail();
             bookmarkService.addBookmark(email, newsId);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
+        } catch (BadRequestException e) {
             return authDataService.redirectToLogin();
         }
     }
@@ -45,7 +49,9 @@ public class BookmarkController {
             String email = member.getEmail();
             bookmarkService.deleteBookmark(email, newsId);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
+        } catch (BadRequestException e) {
             return authDataService.redirectToLogin();
         }
     }

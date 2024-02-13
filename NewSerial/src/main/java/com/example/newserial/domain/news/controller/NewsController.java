@@ -1,6 +1,7 @@
 package com.example.newserial.domain.news.controller;
 
 import com.example.newserial.domain.error.BadRequestException;
+import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.news.dto.ChatGptResponseDto;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +46,8 @@ public class NewsController {
             Member member = authDataService.checkAccessToken(request);
             String content= newsService.ask(questionRequest);
             return ResponseEntity.ok(content); //챗gpt 응답 반환
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }
@@ -59,6 +63,8 @@ public class NewsController {
         try {
             Member member = authDataService.checkAccessToken(request);
             return ResponseEntity.ok(newsService.shortNews(id, member));
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }
@@ -70,6 +76,8 @@ public class NewsController {
         try {
             Member member = authDataService.checkAccessToken(request);
             return ResponseEntity.ok(newsService.mainQuizNews(member));
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }

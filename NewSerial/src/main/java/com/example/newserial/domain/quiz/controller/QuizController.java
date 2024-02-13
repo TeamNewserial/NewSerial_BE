@@ -1,6 +1,7 @@
 package com.example.newserial.domain.quiz.controller;
 
 import com.example.newserial.domain.error.BadRequestException;
+import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.news.service.NewsService;
@@ -11,6 +12,7 @@ import com.example.newserial.domain.quiz.service.QuizService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,8 @@ public class QuizController {
         try {
             Member member = authDataService.checkAccessToken(request);
             return quizService.getNewsQuiz(member, id);
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         } catch (JsonProcessingException e) {
@@ -50,6 +54,8 @@ public class QuizController {
         try{
             Member member = authDataService.checkAccessToken(request);
             return ResponseEntity.ok(quizService.attemptNewsQuiz(member, newsQuizAttemptRequestDto));
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }
@@ -61,6 +67,8 @@ public class QuizController {
         try {
             Member member = authDataService.checkAccessToken(request);
             return ResponseEntity.ok(quizService.getOXQuiz(member));
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         } catch (JsonProcessingException e) {
@@ -74,6 +82,8 @@ public class QuizController {
         try{
             Member member = authDataService.checkAccessToken(request);
             return ResponseEntity.ok(quizService.attemptOXQuiz(member, oxQuizAttemptRequestDto));
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }
