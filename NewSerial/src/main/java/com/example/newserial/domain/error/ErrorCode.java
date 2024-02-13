@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ErrorCode {
     NOT_FOUND(404, "COMMON-ERROR-404", "PAGE NOT FOUND"),
     INTER_SERVER_ERROR(500, "COMMON-ERROR-500", "INTER SERVER ERROR"),
-    BAD_REQUEST(400, "COMMON-ERROR-400", "BAD REQUEST");
+    BAD_REQUEST(400, "COMMON-ERROR-400", "BAD REQUEST"),
+    UNAUTHORIZED(401, "UNAUTHORIZED-ERROR-401", "INVALID TOKEN");
 
     private int status;
     private String errorCode;

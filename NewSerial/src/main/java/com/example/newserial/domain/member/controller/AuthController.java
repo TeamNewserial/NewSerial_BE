@@ -1,6 +1,8 @@
 package com.example.newserial.domain.member.controller;
 
 
+import com.example.newserial.domain.error.BadRequestException;
+import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.config.jwt.TokenCarrier;
 import com.example.newserial.domain.member.config.services.UserDetailsImpl;
@@ -9,6 +11,7 @@ import com.example.newserial.domain.member.dto.request.PasswordChangeRequestDto;
 import com.example.newserial.domain.member.dto.request.SignupRequestDto;
 import com.example.newserial.domain.member.dto.response.MessageResponseDto;
 import com.example.newserial.domain.member.dto.response.MemberResponseDto;
+import com.example.newserial.domain.member.dto.response.TokenReissueDto;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.member.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -95,8 +99,22 @@ public class AuthController {
             return ResponseEntity.ok().body("비밀번호를 재설정했습니다.");
         } catch (IllegalArgumentException e) { //Exception 광범위하게 설정하면 안되는데...
             return ResponseEntity.badRequest().body("비밀번호가 다릅니다.");
-        } catch (Exception e) {
+        } catch (UnAuthorizedException e) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
+        } catch (BadRequestException e) {
             return authDataService.redirectToLogin();
         }
+    }
+
+    //토큰 재발급
+    @GetMapping("/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest request) {
+        try {
+            String accessToken = authDataService.remakeAccessToken(request);
+            return ResponseEntity.ok(new TokenReissueDto(accessToken));
+        } catch (BadRequestException e) {
+            return authDataService.redirectToLogin();
+        }
+
     }
 }
