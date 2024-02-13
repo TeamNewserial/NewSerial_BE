@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,32 +49,6 @@ public class AuthController {
                         userDetails.getEmail(), accessToken));
     }
 
-  
-    @GetMapping ("/oauth2/redirect")
-    public ResponseEntity<?> oauthLoginSuccess(HttpServletRequest request) {
-        //세션에서 토큰, 쿠키 가져오기
-        log.info("세션에서 정보 가져옴");
-        String accessToken = (String) request.getSession().getAttribute("accessToken");
-        String cookie = (String) request.getSession().getAttribute("refreshCookie");
-        Long id = (Long) request.getSession().getAttribute("id");
-        String email = (String) request.getSession().getAttribute("email");
-
-        //Null checks
-        if (accessToken == null || cookie == null || id == null || email == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Session attributes are missing");
-        }
-
-        //세션 정보 삭제
-        request.getSession().removeAttribute("accessToken");
-        request.getSession().removeAttribute("refreshCookie");
-        request.getSession().removeAttribute("id");
-        request.getSession().removeAttribute("email");
-
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie)
-                .body(new MemberResponseDto(id, email, accessToken));
-    }
-
 
 
     @PostMapping("/members")
@@ -91,12 +65,22 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponseDto("회원가입이 성공적으로 완료되었습니다"));
     }
 
-    //로그아웃 후 리다이렉트
-    @GetMapping("/")
-    public ResponseEntity<?> home() {
-        return ResponseEntity.ok()
-                .body(new MessageResponseDto("home"));
+    //소셜로그인 전용 - 쿠키 발급 api
+    @GetMapping("/cookie")
+    public ResponseEntity<?> makeCookie(HttpServletRequest request) {
+        //accessToken 검사
+        authDataService.checkAccessToken(request);
+
+        //refreshToken cookie 만들기
+        String accessToken = jwtUtils.getAccessTokenFromAuthorization(request);
+        String email = jwtUtils.getEmailFromJwtToken(accessToken);
+        ResponseCookie responseCookie = jwtUtils.generateRefreshTokenCookie(email);
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .build();
     }
+
+
 
     //비밀번호 재설정
     @PostMapping("/password")

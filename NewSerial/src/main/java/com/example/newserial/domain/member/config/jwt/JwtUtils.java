@@ -90,6 +90,11 @@ public class JwtUtils {
         ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
         return Rtcookie;
     }
+    public ResponseCookie generateRefreshTokenCookie(String email) {
+        String RefreshToken = generateRefreshTokenFromEmail(email);
+        ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
+        return Rtcookie;
+    }
 
 
     //토큰에서 이메일 꺼내기
