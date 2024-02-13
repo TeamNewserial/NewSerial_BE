@@ -1,5 +1,6 @@
 package com.example.newserial.domain.news.repository;
 
+import com.example.newserial.domain.category.repository.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,9 @@ public interface NewsRepository extends JpaRepository<News, Long> {
             countQuery = "SELECT COUNT(n.id) FROM News n WHERE n.title LIKE %:keyword% OR n.body LIKE %:keyword%"
     )
     Page<News> findByTitleOrBodyContaining(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT n FROM News n ORDER BY n.date DESC")
+    List<News> findAllDesc();
+
+    List<News> findByCategory(Category category);
 }

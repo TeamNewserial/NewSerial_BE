@@ -74,4 +74,26 @@ public class NewsController {
             return authDataService.redirectToLogin();
         }
     }
+
+    //전체 뉴스 조회
+    @GetMapping("/newserial")
+    public ResponseEntity<?> getAllNews(@PageableDefault(size=10) Pageable pageable, HttpServletRequest request){
+        try {
+            Member member = authDataService.checkAccessToken(request);
+            return ResponseEntity.ok(newsService.getAllNews(pageable));
+        } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
+            return authDataService.redirectToLogin();
+        }
+    }
+
+    //카테고리별 뉴스 조회
+    @GetMapping("/newserial/{id}")
+    public ResponseEntity<?> getTypeNews(@PathVariable("id") int id, @PageableDefault(size=10) Pageable pageable, HttpServletRequest request){
+        try {
+            Member member = authDataService.checkAccessToken(request);
+            return ResponseEntity.ok(newsService.getTypeNews(id, pageable));
+        } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
+            return authDataService.redirectToLogin();
+        }
+    }
 }

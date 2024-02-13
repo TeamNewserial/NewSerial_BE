@@ -31,6 +31,9 @@ public class News {
     @NotNull
     private String url;
 
+    @Column
+    private String imageUrl;
+
     @NotNull
     @Column(columnDefinition = "TIMESTAMP")
     private Timestamp date; //YYYY-MM-DD hh:mm:ss.000000’ 형식, 2038–01–19 03:14:07.999999’
