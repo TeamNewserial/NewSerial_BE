@@ -22,4 +22,8 @@ public class Category {
 
     @OneToMany(mappedBy="category")
     private List<News> news;
+
+    public Category(Integer id) {
+        this.id = id;
+    }
 }

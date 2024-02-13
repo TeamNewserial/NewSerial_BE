@@ -1,6 +1,8 @@
 package com.example.newserial.domain.news.service;
 
 import com.example.newserial.domain.bookmark.repository.BookmarkRepository;
+import com.example.newserial.domain.category.repository.Category;
+import com.example.newserial.domain.category.repository.CategoryRepository;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.news.config.ChatGptConfig;
 import com.example.newserial.domain.news.dto.*;
@@ -37,10 +39,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,6 +55,7 @@ public class NewsService {
     private final WordsRepository wordsRepository;
     private final SearchService searchService;
     private final BookmarkRepository bookmarkRepository;
+    private final CategoryRepository categoryRepository;
 
     //api key는 application.properties에 넣어둠.
     @Value("${api-key.chat-gpt}")
@@ -161,5 +161,61 @@ public class NewsService {
         } else {
             return null;
         }
+    }
+
+    //뉴스 전체 조회 메소드
+    //findAllDesc()의 결과로 반환된 Board들을 BoardListResponseDto로 변환하고 List로 변환
+    @Transactional(readOnly = true)
+    public TotalNewsResponseDto getAllNews(Pageable pageable) {
+        List<NewsListResponseDto> newsList= new ArrayList<>();
+        newsList=newsRepository.findAllDesc().stream()
+                .map(news -> new NewsListResponseDto(news))
+                .collect(Collectors.toList());
+
+        List<NewsListResponseDto> pagingNews=new ArrayList<>(); //DTO 객체로 변환해 저장
+
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), newsList.size());
+
+        List<NewsListResponseDto> paginatednews = new ArrayList<>(newsList).subList(startIndex, endIndex); //실제로 페이징된 뉴스 목록
+
+        for(NewsListResponseDto news : paginatednews){
+            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getCategory_id(), news.getTitle(), news.getBody());
+            pagingNews.add(newsListResponseDto);
+        }
+
+        TotalNewsResponseDto responseDto = new TotalNewsResponseDto(newsList.size(), pagingNews);
+        return responseDto;
+    }
+
+    //카테고리별 게시판 조회 메소드
+    @Transactional(readOnly = true)
+    public TotalNewsResponseDto getTypeNews(int category_id, Pageable pageable){
+        Category category=new Category(category_id);
+
+        List<NewsListResponseDto> newsList=new ArrayList<>();
+
+        newsList = newsRepository.findByCategory(category).stream()
+                .map(news->new NewsListResponseDto(news))
+                .collect(Collectors.toList());
+
+        newsList = newsList.stream()
+                .sorted(Comparator.comparing(newsDto -> newsRepository.findById(newsDto.getId()).orElseThrow().getDate(), Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+
+        List<NewsListResponseDto> pagingNews=new ArrayList<>();
+
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), newsList.size());
+
+        List<NewsListResponseDto> paginatednews = new ArrayList<>(newsList).subList(startIndex, endIndex);
+
+        for(NewsListResponseDto news : paginatednews){
+            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getCategory_id(), news.getTitle(), news.getBody());
+            pagingNews.add(newsListResponseDto);
+        }
+
+        TotalNewsResponseDto responseDto = new TotalNewsResponseDto(newsList.size(), pagingNews);
+        return responseDto;
     }
 }
