@@ -70,9 +70,7 @@ public class AuthDataService {
 
     // 로그인으로 리다이렉션
     public ResponseEntity<?> redirectToLogin() {
-        return ResponseEntity.status(HttpStatus.SEE_OTHER)
-                .header("Location", "/")
-                .build();
+        return ResponseEntity.ok("false");
     }
 
 }
