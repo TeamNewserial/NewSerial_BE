@@ -7,6 +7,7 @@ import com.example.newserial.domain.member.config.oauth2.handler.OAuth2LoginFail
 import com.example.newserial.domain.member.config.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.example.newserial.domain.member.config.services.SaveAndDeleteTokenFromRedis;
 import com.example.newserial.domain.member.config.services.UserDetailsServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -108,9 +109,13 @@ public class SecurityConfig {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.logout((logout) ->
-                logout.addLogoutHandler(saveAndDeleteTokenFromRedis)
+                logout.permitAll()
+                        .addLogoutHandler(saveAndDeleteTokenFromRedis)
                         .addLogoutHandler(new CookieClearingLogoutHandler(RTcookie))
-                        .logoutSuccessUrl("/"));
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().println("logout success");
+                        }));
 
         return http.build();
     }
