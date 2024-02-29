@@ -180,7 +180,7 @@ public class NewsService {
         List<NewsListResponseDto> paginatednews = new ArrayList<>(newsList).subList(startIndex, endIndex); //실제로 페이징된 뉴스 목록
 
         for(NewsListResponseDto news : paginatednews){
-            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getCategory_id(), news.getTitle(), news.getBody());
+            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getCategory_id(), news.getTitle(), news.getBody(), news.getImage());
             pagingNews.add(newsListResponseDto);
         }
 
@@ -211,7 +211,7 @@ public class NewsService {
         List<NewsListResponseDto> paginatednews = new ArrayList<>(newsList).subList(startIndex, endIndex);
 
         for(NewsListResponseDto news : paginatednews){
-            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getCategory_id(), news.getTitle(), news.getBody());
+            NewsListResponseDto newsListResponseDto=new NewsListResponseDto(news.getId(), news.getCategory_id(), news.getTitle(), news.getBody(), news.getImage());
             pagingNews.add(newsListResponseDto);
         }
 
