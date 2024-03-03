@@ -117,7 +117,7 @@ public class QuizService {
                 String prompt = newsBody + "\n" +
                         "위 기사에 관련된 O/X 퀴즈를 만들어 '퀴즈:' 다음에 적어주세요.\n" +
                         "다음 줄에 그 퀴즈의 답이 O와 X 중 무엇인지 '답:' 다음에 적어주세요.\n" +
-                        "다음 줄에 그 퀴즈의 답에 대한 설명을 '설명:' 다음에 적어주세요.\n" +
+                        "다음 줄에 그 퀴즈의 답에 대한 설명을 50자 이내로 '설명:' 다음에 적어주세요.\n" +
                         "퀴즈는 기사의 내용을 응용해서 아주 어렵게 만들어주세요.";
 
                 List<ChatGptMessage> messages = new ArrayList<>();
@@ -241,69 +241,6 @@ public class QuizService {
     }
 
     //메인: 한입퀴즈 반환 메소드
-//    @Transactional
-//    public ResponseEntity<?> getOXQuiz(Member member) throws JsonProcessingException {
-//
-//        int randomVal = (int) (Math.random() * (715) - 1) + 1; //1~714
-//
-//        Words words = wordsRepository.findById((long) randomVal).get();
-//
-//        String word = words.getWord();
-//        WebClient client = WebClient.builder()
-//                .baseUrl(ChatGptConfig.CHAT_URL)
-//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //defaultHeader: 모든 요청에 사용할 헤더
-//                .defaultHeader(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey)
-//                .build();
-//
-//        String prompt = word + "\n" +
-//                "위 경제용어의 정의와 관련된 O/X 퀴즈를 만들어 '퀴즈:' 다음에 적어주세요. 예를 들어, '물가 상승률은 물가가 얼마나 상승했는지 나타내는 지표이다.' 이런 식으로 작성해주세요.\n" +
-//                "다음 줄에 그 퀴즈의 답이 O와 X 중 무엇인지 '답:' 다음에 적어주세요.\n" +
-//                "다음 줄에 그 퀴즈의 답에 대한 설명을 '설명:' 다음에 적어주세요.\n";
-//
-//        List<ChatGptMessage> messages = new ArrayList<>();
-//        messages.add(ChatGptMessage.builder()
-//                .role(ChatGptConfig.ROLE)
-//                .content(prompt)
-//                .build());
-//        ChatGptRequestDto chatGptRequest = new ChatGptRequestDto(
-//                ChatGptConfig.CHAT_MODEL,
-//                ChatGptConfig.MAX_TOKEN,
-//                ChatGptConfig.TEMPERATURE,
-//                ChatGptConfig.STREAM,
-//                messages
-//        );
-//        String requestValue = objectMapper.writeValueAsString(chatGptRequest);
-//
-//        Mono<ChatGptResponseDto> responseMono = client.post() //HTTP POST 요청 생성
-//                .bodyValue(requestValue) //POST 요청의 본문(body) 설정, ChatGpt 서비스로 전송할 데이터
-//                .accept(MediaType.APPLICATION_JSON)
-//                .retrieve()
-//                .bodyToMono(ChatGptResponseDto.class); // ChatGptResponseDto로 받기
-//
-//        ChatGptResponseDto chatGptResponseDto = responseMono.block();
-//        String content = getContentFromResponse(chatGptResponseDto);
-//
-////        System.out.println("content = " + content);
-//
-//        String quiz = extractContent(content, "퀴즈", "\\n");
-//        String answer = extractContent(content, "답", "\\n");
-//        String explanation = extractContent(content, "설명", null);
-//
-//        OxQuiz oxQuiz = OxQuiz.builder()
-//                .words(words)
-//                .oxQuestion(quiz)
-//                .oxAnswer(answer)
-//                .oxExplanation(explanation)
-//                .build();
-//
-//        oxQuizRepository.save(oxQuiz);
-//
-//        OxQuizResponseDto oxQuizResponseDto = new OxQuizResponseDto(words.getId(), quiz);
-//
-//        return ResponseEntity.ok(oxQuizResponseDto);
-//    }
-
-    //메인: 한입퀴즈 반환 메소드
     @Transactional
     public List<Object> getOXQuiz(Member member) throws JsonProcessingException {
 
@@ -351,7 +288,7 @@ public class QuizService {
                     String prompt = word + "\n" +
                             "위 경제용어의 정의와 관련된 O/X 퀴즈를 만들어 '퀴즈:' 다음에 적어주세요. 예를 들어, '물가 상승률은 물가가 얼마나 상승했는지 나타내는 지표이다.' 이런 식으로 작성해주세요.\n" +
                             "다음 줄에 그 퀴즈의 답이 O와 X 중 무엇인지 '답:' 다음에 적어주세요.\n" +
-                            "다음 줄에 그 퀴즈의 답에 대한 설명을 '설명:' 다음에 적어주세요.\n";
+                            "다음 줄에 그 퀴즈의 답에 대한 설명을 50자 이내로 '설명:' 다음에 적어주세요.\n";
 
                     List<ChatGptMessage> messages = new ArrayList<>();
                     messages.add(ChatGptMessage.builder()
