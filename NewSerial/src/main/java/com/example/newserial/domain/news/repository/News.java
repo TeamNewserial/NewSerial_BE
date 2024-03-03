@@ -22,6 +22,9 @@ public class News {
     private Long id;
 
     @NotNull
+    private String press;
+
+    @NotNull
     private String title;
 
     @NotNull
