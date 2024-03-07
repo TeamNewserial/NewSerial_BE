@@ -112,12 +112,11 @@ public class MyPageService {
         PetCondition nextPetCondition=petConditionRepository.findById((long) (pet.getPetCondition().getId()+1)).get();
 
         String petImage=pet.getPetImage();
-        String houseImage=pet.getHouseImage();
         String currentPet=pet.getPetCondition().getRanks();
         String nextPet=nextPetCondition.getRanks();
         int count=nextPetCondition.getCount()-pet.getScore();
 
-        MyPetDto myPetDto=new MyPetDto(petImage, houseImage, currentPet, nextPet, count);
+        MyPetDto myPetDto=new MyPetDto(petImage, currentPet, nextPet, count);
 
         return myPetDto;
     }

@@ -211,6 +211,9 @@ public class QuizService {
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                String petImageStr=Integer.toString(petConditionId);
+                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                pet.updatePetImage(petImage);
             }
 
             NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto(question, userAnswer,qAnswer,"맞았습니다", explanation);
@@ -233,6 +236,9 @@ public class QuizService {
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                String petImageStr=Integer.toString(petConditionId);
+                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                pet.updatePetImage(petImage);
             }
 
             NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto(question, userAnswer,qAnswer,"틀렸습니다", explanation);
@@ -370,6 +376,9 @@ public class QuizService {
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                String petImageStr=Integer.toString(petConditionId);
+                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                pet.updatePetImage(petImage);
             }
 
             OxQuizAttemptResponseDto oxQuizAttemptResponseDto=new OxQuizAttemptResponseDto(words.getId(), question, userAnswer,qAnswer,"맞았습니다", explanation);
@@ -392,21 +401,13 @@ public class QuizService {
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                String petImageStr=Integer.toString(petConditionId);
+                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                pet.updatePetImage(petImage);
             }
 
             OxQuizAttemptResponseDto oxQuizAttemptResponseDto=new OxQuizAttemptResponseDto(words.getId(), question, userAnswer,qAnswer,"틀렸습니다", explanation);
             return oxQuizAttemptResponseDto;
         }
     }
-
-//    //메인: 유저별 한입퀴즈 맞춤 기사
-//    public MainQuizNewsResponseDto getQuizNews(Member member){
-//        List<OxQuizAttempt> userAttemptList=oxQuizAttemptRepository.findByMember(member);
-//        for (OxQuizAttempt oxQuizAttempt : userAttemptList){
-//            if (oxQuizAttempt.getOxScore()==2){
-//                userAttemptList.remove(oxQuizAttempt);
-//            }
-//        }
-//        //뽑아오는걸 랜덤으로 할지 아니면 제일 최근에 틀린걸로 할지??
-//    }
 }
