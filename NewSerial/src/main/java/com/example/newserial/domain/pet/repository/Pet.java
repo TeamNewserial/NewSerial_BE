@@ -32,19 +32,16 @@ public class Pet {
     @Column(columnDefinition = "TEXT")
     private String petImage;
 
-    @Column(columnDefinition = "TEXT")
-    private String houseImage;
 
     @OneToOne
     @MapsId
     @JoinColumn(name="member_id")
     private Member member;
 
-    public Pet(PetCondition petCondition, int score, String petImage, String houseImage, Member member) {
+    public Pet(PetCondition petCondition, int score, String petImage, Member member) {
         this.petCondition = petCondition;
         this.score = score;
         this.petImage = petImage;
-        this.houseImage=houseImage;
         this.member = member;
     }
 
@@ -55,4 +52,6 @@ public class Pet {
     public void updateCondition(PetCondition petCondition){
         this.petCondition=petCondition;
     }
+
+    public void updatePetImage(String petImage){this.petImage=petImage;}
 }
