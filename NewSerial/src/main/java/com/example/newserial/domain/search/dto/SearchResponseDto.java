@@ -19,6 +19,8 @@ public class SearchResponseDto {
     private String body;
     private Timestamp date;
     private String category;
+    private String press;
+    private String imageUrl;
 
     public SearchResponseDto(News news) {
         this.id = news.getId();
@@ -26,5 +28,7 @@ public class SearchResponseDto {
         this.body = news.getBody();
         this.date = news.getDate();
         this.category = news.getCategory().getName();
+        this.press = news.getPress();
+        this.imageUrl = news.getImageUrl();
     }
 }
