@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.newserial.domain.member.config.jwt.JwtUtilsTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-19T16:21:52" hostname="DESKTOP-ODJ9EJ0" time="0.412">
+  <properties/>
+  <testcase name="removeBearerTest()" classname="com.example.newserial.domain.member.config.jwt.JwtUtilsTest" time="0.412"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
