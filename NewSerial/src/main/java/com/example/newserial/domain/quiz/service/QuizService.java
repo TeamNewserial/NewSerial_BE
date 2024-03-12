@@ -86,7 +86,7 @@ public class QuizService {
 
         News news = newsRepository.findById(newsId).get();
 
-        if (newsQuizAttemptRepository.existsByMember(member)) { //유저가 이미 퀴즈를 푼 경우
+        if (newsQuizAttemptRepository.existsByMemberAndNews(member, news)) { //유저가 이미 해당 뉴스의 퀴즈를 푼 경우
             if (newsQuizRepository.existsByNews(news)) {
                 NewsQuiz newsQuiz = newsQuizRepository.findByNews(news).get();
                 NewsQuizAttempt newsQuizAttempt = newsQuizAttemptRepository.findByMemberAndNews(member, news).get();
@@ -99,6 +99,9 @@ public class QuizService {
                 NewsQuizAttemptResponseDto newsQuizAttemptResponseDto = new NewsQuizAttemptResponseDto(question, userAnswer, qAnswer, result, explanation);
 
                 return ResponseEntity.ok(newsQuizAttemptResponseDto);
+            }
+            else{
+                return ResponseEntity.ok("해당 뉴스가 없습니다.");
             }
         } else { //유저가 아직 퀴즈를 풀지 않은 경우
             if (newsQuizRepository.existsByNews(news)) { //뉴스에 대한 퀴즈가 이미 db에 저장돼있는 경우 db에서 가져와 반환
@@ -143,8 +146,6 @@ public class QuizService {
                 ChatGptResponseDto chatGptResponseDto = responseMono.block();
                 String content = getContentFromResponse(chatGptResponseDto);
 
-//        System.out.println("content = " + content);
-
                 String quiz = extractContent(content, "퀴즈", "\\n");
                 String answer = extractContent(content, "답", "\\n");
                 String explanation = extractContent(content, "설명", null);
@@ -163,7 +164,6 @@ public class QuizService {
                 return ResponseEntity.ok(newsQuizResponseDto);
             }
         }
-        return null;
     }
 
     //내용 추출 메소드
