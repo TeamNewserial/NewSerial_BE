@@ -14,4 +14,5 @@ public interface NewsQuizAttemptRepository extends JpaRepository<NewsQuizAttempt
     boolean existsByMember(Member member);
     List<NewsQuizAttempt> findByMember(Member member);
     Optional<NewsQuizAttempt> findByMemberAndNews(Member member, News news);
+    boolean existsByMemberAndNews(Member member, News news);
 }
