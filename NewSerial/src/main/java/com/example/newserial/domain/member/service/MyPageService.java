@@ -2,10 +2,7 @@ package com.example.newserial.domain.member.service;
 
 import com.example.newserial.domain.bookmark.repository.Bookmark;
 import com.example.newserial.domain.bookmark.repository.BookmarkRepository;
-import com.example.newserial.domain.member.dto.response.MyBookmarkDto;
-import com.example.newserial.domain.member.dto.response.MyPageDto;
-import com.example.newserial.domain.member.dto.response.MyPetDto;
-import com.example.newserial.domain.member.dto.response.MyQuizDto;
+import com.example.newserial.domain.member.dto.response.*;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.news.repository.News;
 import com.example.newserial.domain.pet.repository.Pet;
@@ -15,6 +12,7 @@ import com.example.newserial.domain.pet.repository.PetRepository;
 import com.example.newserial.domain.quiz.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +50,7 @@ public class MyPageService {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     //마이페이지: 유저가 북마크한 뉴스 조회
-    public List<MyBookmarkDto> getBookmarkNews(Member member) {
+    public TotalBookmarkResponseDto getBookmarkNews(Pageable pageable, Member member) {
         List<MyBookmarkDto> myBookmarkDtoList = new ArrayList<>();
 
         List<Bookmark> bookmarkList = bookmarkRepository.findByMember(member);
@@ -65,11 +63,24 @@ public class MyPageService {
             myBookmarkDtoList.add(myBookmarkDto);
         }
 
-        return myBookmarkDtoList;
+        List<MyBookmarkDto> pagingBookmark=new ArrayList<>();
+
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), myBookmarkDtoList.size());
+
+        List<MyBookmarkDto> paginatedBookmark=new ArrayList<>(myBookmarkDtoList).subList(startIndex,endIndex);
+
+        for(MyBookmarkDto dto:paginatedBookmark){
+            MyBookmarkDto myBookmarkDto=new MyBookmarkDto(dto.getTitle(), dto.getCreatedTime());
+            pagingBookmark.add(myBookmarkDto);
+        }
+
+        TotalBookmarkResponseDto responseDto=new TotalBookmarkResponseDto(myBookmarkDtoList.size(), pagingBookmark);
+        return responseDto;
     }
 
     //마이페이지: 유저 퀴즈 기록 조회
-    public List<MyQuizDto> getMemberQuiz(Member member){
+    public TotalQuizResponseDto getMemberQuiz(Pageable pageable, Member member){
         List<MyQuizDto> myQuizDtoList=new ArrayList<>();
 
         List<NewsQuizAttempt> newsQuizAttemptList=newsQuizAttemptRepository.findByMember(member);
@@ -103,7 +114,21 @@ public class MyPageService {
             }
         }
 
-        return myQuizDtoList;
+        List<MyQuizDto> pagingQuiz=new ArrayList<>();
+
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min(startIndex + pageable.getPageSize(), myQuizDtoList.size());
+
+        List<MyQuizDto> paginatedQuiz=new ArrayList<>(myQuizDtoList).subList(startIndex, endIndex);
+
+        for(MyQuizDto dto:paginatedQuiz){
+            MyQuizDto myQuizDto=new MyQuizDto(dto.getQuizQuestion(), dto.getQuizAnswer(), dto.getUserAnswer(), dto.getCreatedTime());
+            pagingQuiz.add(myQuizDto);
+        }
+
+        TotalQuizResponseDto responseDto=new TotalQuizResponseDto(myQuizDtoList.size(), pagingQuiz);
+
+        return responseDto;
     }
 
     //마이페이지: 유저 펫 상태 조회

@@ -7,6 +7,8 @@ import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.member.service.MyPageService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,10 +30,10 @@ public class MyPageController {
 
     //유저 북마크 기사 목록 조회
     @GetMapping("/mypage/bookmark")
-    public ResponseEntity<?> getBookmarkNews(HttpServletRequest request){
+    public ResponseEntity<?> getBookmarkNews(@PageableDefault(size=10) Pageable pageable, HttpServletRequest request){
         try{
             Member member = authDataService.checkAccessToken(request);
-            return ResponseEntity.ok(mypageService.getBookmarkNews(member));
+            return ResponseEntity.ok(mypageService.getBookmarkNews(pageable, member));
         } catch (UnAuthorizedException e) {
             return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
@@ -41,10 +43,10 @@ public class MyPageController {
 
     //유저 퀴즈 기록 조회
     @GetMapping("/mypage/quiz")
-    public ResponseEntity<?> getMemberQuiz(HttpServletRequest request){
+    public ResponseEntity<?> getMemberQuiz(@PageableDefault(size=10) Pageable pageable, HttpServletRequest request){
         try{
             Member member = authDataService.checkAccessToken(request);
-            return ResponseEntity.ok(mypageService.getMemberQuiz(member));
+            return ResponseEntity.ok(mypageService.getMemberQuiz(pageable, member));
         } catch (UnAuthorizedException e) {
             return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("토큰이 없거나 만료되었습니다.");
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우

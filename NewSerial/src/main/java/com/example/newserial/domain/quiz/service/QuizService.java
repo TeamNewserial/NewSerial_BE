@@ -212,7 +212,7 @@ public class QuizService {
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
                 String petImageStr=Integer.toString(petConditionId);
-                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
             }
 
@@ -237,7 +237,7 @@ public class QuizService {
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
                 String petImageStr=Integer.toString(petConditionId);
-                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
             }
 
@@ -377,7 +377,7 @@ public class QuizService {
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
                 String petImageStr=Integer.toString(petConditionId);
-                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
             }
 
@@ -402,7 +402,7 @@ public class QuizService {
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
                 String petImageStr=Integer.toString(petConditionId);
-                String petImage="http://localhost:8080/images/"+petImageStr+".gif";
+                String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
             }
 

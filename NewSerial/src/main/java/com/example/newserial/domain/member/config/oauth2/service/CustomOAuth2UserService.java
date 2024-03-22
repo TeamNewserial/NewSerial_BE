@@ -120,7 +120,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         //펫 엔티티 추가
         PetCondition petCondition=petConditionRepository.findById(1L).get();
-        String petImage="http://localhost:8080/images/1.gif";
+        String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/1.gif";
         Pet pet=new Pet(petCondition,0,petImage,member);
         petRepository.save(pet);
 
