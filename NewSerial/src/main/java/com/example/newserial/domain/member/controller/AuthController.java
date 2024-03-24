@@ -117,4 +117,15 @@ public class AuthController {
         }
 
     }
+
+    //로그아웃여부 체크
+    @GetMapping("/logoutCheck")
+    public ResponseEntity<?> logoutCheck(HttpServletRequest request) {
+        try {
+            authDataService.checkAccessToken(request);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
+    }
 }

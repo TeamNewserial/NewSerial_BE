@@ -51,6 +51,9 @@ public class RedisService {
     }
 
     public boolean hasKeyBlackList(String key) {
+        if (!key.contains("Bearer")) {
+            key = "Bearer " + key;
+        }
         return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
     }
 
