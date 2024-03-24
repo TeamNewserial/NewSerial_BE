@@ -122,7 +122,13 @@ public class NewsService {
         String[] sentences = newsbody.split("(?<=\\.)");
         List<String> newsBodyList = Arrays.asList(sentences);
 
-        boolean bookmark=bookmarkRepository.existsByMemberAndNews(member, news);
+        boolean bookmark;
+
+        if(member!=null) {
+            bookmark = bookmarkRepository.existsByMemberAndNews(member, news);
+        } else{
+            bookmark=false;
+        }
 
         TodayNewsDto todayNewsDto=new TodayNewsDto(news.getId(), newsTitle, newsBodyList, news.getCategory().getName(), news.getUrl(), bookmark);
 
@@ -131,23 +137,31 @@ public class NewsService {
 
     //한입퀴즈 맞춤 기사 조회
     public MainQuizNewsDto mainQuizNews(Member member){
-        if (oxQuizAttemptRepository.existsByMember(member)) { //유저가 ox 퀴즈를 푼 기록이 있는 경우
-            List<OxQuizAttempt> oxQuizAttempts = oxQuizAttemptRepository.findByMember(member);
-            if (!oxQuizAttempts.isEmpty()){ //퀴즈 기록이 비어있지 않다면 진행
-                Random random = new Random();
-                OxQuizAttempt oxQuizAttempt = oxQuizAttempts.get(new Random().nextInt(oxQuizAttempts.size())); //푼 퀴즈 중 랜덤으로 1개 추출
-                String word= String.valueOf(oxQuizAttempt.getWords()); //단어 추출
-                return getMainQuizNews(word);
-            }
-            else{
-                return null;
-            }
-        }
-        else{ //유저가 ox 퀴즈를 푼 기록이 없는 경우
+        if(member==null){
             int randomVal = (int) (Math.random() * (715) - 1) + 1; //용어 중 랜덤으로 1개 추출
             Words words=wordsRepository.findById(Long.valueOf(randomVal)).get();
             String word=words.getWord();
             return getMainQuizNews(word);
+        }
+        else{
+            if (oxQuizAttemptRepository.existsByMember(member)) { //유저가 ox 퀴즈를 푼 기록이 있는 경우
+                List<OxQuizAttempt> oxQuizAttempts = oxQuizAttemptRepository.findByMember(member);
+                if (!oxQuizAttempts.isEmpty()){ //퀴즈 기록이 비어있지 않다면 진행
+                    Random random = new Random();
+                    OxQuizAttempt oxQuizAttempt = oxQuizAttempts.get(new Random().nextInt(oxQuizAttempts.size())); //푼 퀴즈 중 랜덤으로 1개 추출
+                    String word= String.valueOf(oxQuizAttempt.getWords()); //단어 추출
+                    return getMainQuizNews(word);
+                }
+                else{
+                    return null;
+                }
+            }
+            else{ //유저가 ox 퀴즈를 푼 기록이 없는 경우
+                int randomVal = (int) (Math.random() * (715) - 1) + 1; //용어 중 랜덤으로 1개 추출
+                Words words=wordsRepository.findById(Long.valueOf(randomVal)).get();
+                String word=words.getWord();
+                return getMainQuizNews(word);
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.example.newserial.domain.member.service;
 
 import com.example.newserial.domain.error.BadRequestException;
 import com.example.newserial.domain.error.ErrorCode;
+import com.example.newserial.domain.error.NoTokenException;
 import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.config.jwt.JwtUtils;
 import com.example.newserial.domain.member.repository.Member;
@@ -33,7 +34,7 @@ public class AuthDataService {
         }
         String accesstoken = jwtUtils.getAccessTokenFromAuthorization(request);
         if (accesstoken.equals("no token")) {
-            throw new UnAuthorizedException("토큰 없음");
+            throw new NoTokenException("토큰 없음");
         }
         if (!jwtUtils.validateJwtToken(accesstoken)) { //AT 만료
             throw new UnAuthorizedException("access token 만료");
