@@ -94,8 +94,7 @@ public class SecurityConfig {
                                 .sessionFixation().migrateSession()
                 )
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/main-quiz/answer","/bookmark/**", "/mypage/**", "/opinion/**", "/newserial-quiz/answer").authenticated()
-                        .anyRequest().permitAll()
+                        auth.anyRequest().permitAll()
                 )
 
                 .oauth2Login(oauth2login ->
