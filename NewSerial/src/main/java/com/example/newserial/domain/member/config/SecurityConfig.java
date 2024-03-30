@@ -114,7 +114,7 @@ public class SecurityConfig {
                         .addLogoutHandler(new CookieClearingLogoutHandler(RTcookie))
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
-                            response.getWriter().println("logout success");
+                            response.getWriter().print("logout success");
                         }));
 
         return http.build();
