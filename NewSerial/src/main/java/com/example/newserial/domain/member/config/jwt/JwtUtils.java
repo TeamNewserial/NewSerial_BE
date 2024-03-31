@@ -81,7 +81,15 @@ public class JwtUtils {
     public ResponseCookie generateRefreshTokenCookie(UserDetailsImpl userPrincipal) {
         String RefreshToken = generateRefreshTokenFromEmail(userPrincipal.getEmail());
         //https 사용시 secure 설정 true
-        ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
+        ResponseCookie Rtcookie = ResponseCookie
+                .from(RTCookie, RefreshToken)
+                .path("/")
+                .maxAge(24*60*60)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .domain("teamnewserial.github.io")
+                .build();
         return Rtcookie;
     }
     public ResponseCookie generateRefreshTokenCookie(CustomOAuth2User user) {
