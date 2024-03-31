@@ -87,12 +87,26 @@ public class JwtUtils {
     public ResponseCookie generateRefreshTokenCookie(CustomOAuth2User user) {
         String RefreshToken = generateRefreshTokenFromEmail(user.getEmail());
         //https 사용시 secure 설정 true
-        ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
+        ResponseCookie Rtcookie = ResponseCookie
+                .from(RTCookie, RefreshToken)
+                .path("/")
+                .maxAge(24*60*60)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
         return Rtcookie;
     }
     public ResponseCookie generateRefreshTokenCookie(String email) {
         String RefreshToken = generateRefreshTokenFromEmail(email);
-        ResponseCookie Rtcookie = ResponseCookie.from(RTCookie, RefreshToken).path("/").maxAge(24*60*60).httpOnly(true).build();
+        ResponseCookie Rtcookie = ResponseCookie
+                .from(RTCookie, RefreshToken)
+                .path("/")
+                .maxAge(24*60*60)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
         return Rtcookie;
     }
 
