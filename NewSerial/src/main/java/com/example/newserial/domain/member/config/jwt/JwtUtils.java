@@ -94,6 +94,7 @@ public class JwtUtils {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain("teamnewserial.github.io")
                 .build();
         return Rtcookie;
     }
@@ -106,6 +107,7 @@ public class JwtUtils {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain("teamnewserial.github.io")
                 .build();
         return Rtcookie;
     }
