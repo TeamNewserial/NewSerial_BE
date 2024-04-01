@@ -27,4 +27,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findAllDesc();
 
     List<News> findByCategory(Category category);
+
+    @Query("SELECT n FROM News n ORDER BY n.date DESC LIMIT 1")
+    News findLatestNews();
 }

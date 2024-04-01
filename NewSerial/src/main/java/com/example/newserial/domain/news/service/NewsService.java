@@ -232,4 +232,14 @@ public class NewsService {
         TotalNewsResponseDto responseDto = new TotalNewsResponseDto(newsList.size(), pagingNews);
         return responseDto;
     }
+
+    //뉴스 크롤링한 시간 구하기
+    @Transactional(readOnly = true)
+    public LastUpdatedTimeDto getLastUpdatedTime() {
+        News news = newsRepository.findLatestNews();
+        Timestamp date = news.getDate();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
+        String formattedDate = df.format(date);
+        return new LastUpdatedTimeDto(formattedDate);
+    }
 }
