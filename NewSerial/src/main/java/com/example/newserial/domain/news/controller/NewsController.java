@@ -6,6 +6,7 @@ import com.example.newserial.domain.error.UnAuthorizedException;
 import com.example.newserial.domain.member.repository.Member;
 import com.example.newserial.domain.member.service.AuthDataService;
 import com.example.newserial.domain.news.dto.ChatGptResponseDto;
+import com.example.newserial.domain.news.dto.LastUpdatedTimeDto;
 import com.example.newserial.domain.news.dto.QuestionRequestDto;
 import com.example.newserial.domain.search.dto.SuggestRequestDto;
 import com.example.newserial.domain.search.dto.SuggestResponseDto;
@@ -115,5 +116,12 @@ public class NewsController {
         } catch (BadRequestException e) {    //액세스 토큰, 리프레시 토큰 모두 만료된 경우
             return authDataService.redirectToLogin();
         }
+    }
+
+    //최신 뉴스 업데이트 시각 구하기
+    @GetMapping("/latestNews")
+    public ResponseEntity<?> getLatestNews(HttpServletRequest request, HttpServletResponse response) {
+        LastUpdatedTimeDto dto = newsService.getLastUpdatedTime();
+        return ResponseEntity.ok(dto);
     }
 }
