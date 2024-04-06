@@ -5,6 +5,7 @@ import com.example.newserial.domain.member.config.jwt.AuthEntryPointJwt;
 import com.example.newserial.domain.member.config.jwt.AuthTokenFilter;
 import com.example.newserial.domain.member.config.oauth2.handler.OAuth2LoginFailureHandler;
 import com.example.newserial.domain.member.config.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.example.newserial.domain.member.config.services.DeleteCookieHandler;
 import com.example.newserial.domain.member.config.services.SaveAndDeleteTokenFromRedis;
 import com.example.newserial.domain.member.config.services.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
@@ -111,10 +112,11 @@ public class SecurityConfig {
         http.logout((logout) ->
                 logout.permitAll()
                         .addLogoutHandler(saveAndDeleteTokenFromRedis)
-                        .addLogoutHandler(new CookieClearingLogoutHandler(RTcookie))
+//                        .addLogoutHandler(new CookieClearingLogoutHandler(RTcookie))
+                        .addLogoutHandler(new DeleteCookieHandler(RTcookie))
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
-                            response.getWriter().println("logout success");
+                            response.getWriter().print("logout success");
                         }));
 
         return http.build();

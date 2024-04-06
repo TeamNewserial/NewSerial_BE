@@ -60,7 +60,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     }
 
     private String makeRedirectUrl(String accessToken) {
-        return UriComponentsBuilder.fromUriString("/social-login-callback") //http://localhost:3000을 붙여야 하나
+        return UriComponentsBuilder.fromUriString("https://teamnewserial.github.io/social-login-callback") //http://localhost:3000을 붙여야 하나
                 .queryParam("token", accessToken)
                 .build().toUriString();
     }
