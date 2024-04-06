@@ -134,12 +134,22 @@ public class MyPageService {
     //마이페이지: 유저 펫 상태 조회
     public MyPetDto getMemberPet(Member member){
         Pet pet=petRepository.findByMember(member).get();
-        PetCondition nextPetCondition=petConditionRepository.findById((long) (pet.getPetCondition().getId()+1)).get();
+
+        int id= pet.getPetCondition().getId();
+
+        PetCondition nextPetCondition=null;
+
+        if(id<5){
+            nextPetCondition=petConditionRepository.findById((long) (pet.getPetCondition().getId()+1)).get();
+        }
+        else{
+            nextPetCondition=petConditionRepository.findById((long) (pet.getPetCondition().getId())).get();
+        }
 
         String petImage=pet.getPetImage();
         String currentPet=pet.getPetCondition().getRanks();
         String nextPet=nextPetCondition.getRanks();
-        int count=nextPetCondition.getCount()-pet.getScore();
+        int count=nextPet.equals("임금견")?0:nextPetCondition.getCount()-pet.getScore();
 
         MyPetDto myPetDto=new MyPetDto(petImage, currentPet, nextPet, count);
 

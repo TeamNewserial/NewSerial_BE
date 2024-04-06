@@ -270,7 +270,7 @@ public class QuizService {
             pet.updateScore(2);
             int petScore=pet.getScore();
 
-            if(petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
+            if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
@@ -295,7 +295,7 @@ public class QuizService {
             pet.updateScore(1);
             int petScore=pet.getScore();
 
-            if(petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
+            if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
@@ -500,7 +500,7 @@ public class QuizService {
             pet.updateScore(2);
             int petScore=pet.getScore();
 
-            if(petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
+            if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
@@ -525,7 +525,7 @@ public class QuizService {
             pet.updateScore(1);
             int petScore=pet.getScore();
 
-            if(petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
+            if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
