@@ -30,6 +30,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.BufferedOutputStream;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -271,12 +273,16 @@ public class QuizService {
             int petScore=pet.getScore();
 
             if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
-                petConditionId+=1;
-                PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
-                pet.updateCondition(petCondition);
-                String petImageStr=Integer.toString(petConditionId);
-                String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
-                pet.updatePetImage(petImage);
+                    petConditionId+=1;
+                    //PetCondition 업데이트
+                    PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
+                    pet.updateCondition(petCondition);
+                    //petImage 업데이트
+                    String petImageStr=Integer.toString(petConditionId);
+                    String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
+                    pet.updatePetImage(petImage);
+                    //petDate 업데이트
+                    pet.updatePetDate(LocalDate.now());
             }
 
             NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto(question, userAnswer,qAnswer,"맞았습니다", explanation);
@@ -297,11 +303,15 @@ public class QuizService {
 
             if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
+                //PetCondition 업데이트
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                //petImage 업데이트
                 String petImageStr=Integer.toString(petConditionId);
                 String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
+                //petDate 업데이트
+                pet.updatePetDate(LocalDate.now());
             }
 
             NewsQuizAttemptResponseDto newsQuizAttemptResponseDto=new NewsQuizAttemptResponseDto(question, userAnswer,qAnswer,"틀렸습니다", explanation);
@@ -502,11 +512,15 @@ public class QuizService {
 
             if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
+                //PetCondition 업데이트
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                //petImage 업데이트
                 String petImageStr=Integer.toString(petConditionId);
                 String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
+                //petDate 업데이트
+                pet.updatePetDate(LocalDate.now());
             }
 
             OxQuizAttemptResponseDto oxQuizAttemptResponseDto=new OxQuizAttemptResponseDto(words.getId(), question, userAnswer,qAnswer,"맞았습니다", explanation);
@@ -527,11 +541,15 @@ public class QuizService {
 
             if(petConditionId<5 && petScore>=petConditionRepository.findById((long) (petConditionId+1)).get().getCount()){
                 petConditionId+=1;
+                //PetCondition 업데이트
                 PetCondition petCondition=petConditionRepository.findById((long) petConditionId).get();
                 pet.updateCondition(petCondition);
+                //petImage 업데이트
                 String petImageStr=Integer.toString(petConditionId);
                 String petImage="https://port-0-newserial-be-am952lltkznc7o.sel5.cloudtype.app/images/"+petImageStr+".gif";
                 pet.updatePetImage(petImage);
+                //petDate 업데이트
+                pet.updatePetDate(LocalDate.now());
             }
 
             OxQuizAttemptResponseDto oxQuizAttemptResponseDto=new OxQuizAttemptResponseDto(words.getId(), question, userAnswer,qAnswer,"틀렸습니다", explanation);

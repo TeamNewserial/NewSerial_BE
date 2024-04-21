@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +35,8 @@ public class Pet {
     @Column(columnDefinition = "TEXT")
     private String petImage;
 
+    @Column(name = "petDate")
+    private LocalDate petDate;
 
     @OneToOne
     @MapsId
@@ -44,6 +49,8 @@ public class Pet {
         this.petImage = petImage;
         this.member = member;
     }
+
+    public void updatePetDate(LocalDate petDate){this.petDate=petDate;}
 
     public void updateScore(int score){
         this.score+=score;
